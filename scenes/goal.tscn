@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/goal.gd" id="1_washp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4o8b0"]
+size = Vector2(44, 92)
+
+[node name="Goal" type="Area2D"]
+collision_layer = 32
+collision_mask = 1
+script = ExtResource("1_washp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("RectangleShape2D_4o8b0")

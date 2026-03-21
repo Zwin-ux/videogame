@@ -4,7 +4,7 @@ Godot 4 prototype for a fast platformer-shooter with a jetpack, fuel pickups, si
 
 ## Progress Video
 
-[Gameplay capture](media/scrapyard-comet-progress.mp4)
+
 
 ## What is in the project
 

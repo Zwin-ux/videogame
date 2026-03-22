@@ -1,82 +1,63 @@
 # Killer Queen
 
-Godot 4 prototype for a 2D jetpack action-metroidvania. The opening fantasy is a forced upward escape through a hive-city shaft; once you reach safety, the longer-term direction is a broader explorable world of ruins, overgrowth, and bio-industrial structures.
+![Killer Queen opening slice](media/github/opening-slice.png)
 
-## Progress Video
+Killer Queen is a Godot action-platformer about jet-powered ascent, starter-weapon rivalry, and cutting a path out of a dying hive-city.
 
+Play the current build on itch.io: [zwin-ux.itch.io/killer-queen](https://zwin-ux.itch.io/killer-queen)
 
+The current build is a playable opening slice:
+- choose `Service Fang` or `Dock Blaster`
+- break out of the dock
+- climb the first shaft
+- duel the rival hunter in the cave
+- salvage the damaged opposite starter and push toward the mountain route
 
-## What is in the project
+## Run The Project
 
-- A playable vertical slice in `res://scenes/main.tscn`
-- Momentum-focused player controller with:
-  - run acceleration
-  - jump buffer
-  - coyote time
-  - burst-driven jetpack recovery
-  - wall slide and wall kick
-  - forward blaster fire
-- Animated player and hazard sprite-sheet scaffolds
-- Drone and mine hazards
-- HUD prompts powered by `godot-input-prompts`
-- An Aseprite-ready art pipeline:
-  - source files in `art/source`
-  - exports in `art/export`
-  - batch export script in `tools/export_aseprite.ps1`
+Requirements:
+- Godot `4.6.1` or newer
 
-## Controls
+Quick start:
+1. Open the project in Godot.
+2. Run `scenes/main_menu.tscn` for the front door.
+3. Run `scenes/main.tscn` if you want the gameplay slice directly.
 
-- `A / D` or left/right: run
-- `Space`: jump
-- `Left Shift`: jetpack
-- `F` or left mouse: shoot
-- `R`: restart the run
+## Repo Layout
 
-The project also has controller mappings enabled in `project.godot`.
+- `scenes/` playable scenes and UI surfaces
+- `scripts/` gameplay, UI, rendering, and state logic
+- `art/source/` Aseprite-first source art and production docs
+- `art/export/` runtime sprite sheets and generated exports
+- `docs/` design, art, and planning notes
+- `tools/` content generators, exporters, and build helpers
+- `release/` packaging and storefront assets
 
-## Open the project
+## Contributing
 
-Use Godot 4.6+ and open:
+This repo is being set up for real open development. Good contributions right now:
+- combat feel and movement tuning
+- player, rival, and environment sprite cleanup
+- readability and UI polish
+- encounter tuning, bug fixes, and performance cleanup
+- documentation that helps contributors ship faster
 
-- `C:\Users\mzwin\Downloads\videogame`
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a larger pull request.
 
-The console binary already on this machine is:
+## Key Docs
 
-- `C:\Users\mzwin\Downloads\Godot_v4.6.1-stable_win64.exe\Godot_v4.6.1-stable_win64_console.exe`
+- [Docs Index](docs/README.md)
+- [Game Direction](docs/game/DESIGN.md)
+- [Opening Slice](docs/game/FIRST-VERTICAL-SLICE.md)
+- [Rival Boss](docs/game/STARTER-RIVAL-BOSS.md)
+- [Pixel Art Bar](docs/art/PIXEL-ART-FUNDAMENTALS.md)
 
-## Itch.io build
+## Asset Workflow
 
-This repo now includes a Windows desktop export preset for itch.io in `export_presets.cfg`.
+- Source art lives in `art/source`
+- Exported runtime sheets live in `art/export`
+- Batch export runs through `tools/export_aseprite.ps1`
 
-To build and zip the itch.io package on this machine:
+## Open Source Direction
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\package_itchio.ps1
-```
-
-The script exports the game to `dist\itchio\windows\KillerQueen.exe`, copies the Windows README, and creates a zip ready for upload.
-
-Page copy and release notes live in:
-
-- `release/itchio/ITCHIO-PAGE-COPY.md`
-- `release/itchio/WINDOWS-README.txt`
-
-## Aseprite workflow
-
-This repo is set up to use Aseprite as the sprite authoring tool, not as a runtime dependency inside Godot.
-
-1. Put `.aseprite` source files in `art/source`
-2. Export sheets with:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\export_aseprite.ps1
-```
-
-3. Import the exported PNG/JSON assets into Godot from `art/export`
-
-## Next high-value improvements
-
-- Lock the first 20 seconds of the escape tower for feel and readability
-- Build the platform tileset so the world matches the player and hazard bar
-- Expand the backdrop into the sunset-ruin and overgrowth themes described in `DESIGN.md`
-- Turn the tower into the opening chapter of the eventual metroidvania map
+Issues and pull requests are welcome. Keep them small, testable, and aligned with the game's tone. This project gets better through stronger feel, clearer visuals, and cleaner staging, not through scope spam.

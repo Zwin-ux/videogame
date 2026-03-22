@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/slash_fx.gd" id="1_4musk"]
+
+[node name="SlashFx" type="Node2D"]
+z_index = 4
+script = ExtResource("1_4musk")
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 1
+centered = true
+z_index = 1
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)

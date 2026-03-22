@@ -1,0 +1,211 @@
+{
+	"frames": [
+		{
+			"duration": 65,
+			"filename": "ground_slash_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 30,
+			"filename": "ground_slash_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 32,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "ground_slash_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 64,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 60,
+			"filename": "air_slash_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 96,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 30,
+			"filename": "air_slash_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 128,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "air_slash_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 160,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 35,
+			"filename": "hit_confirm_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 192,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 75,
+			"filename": "hit_confirm_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 224,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		}
+	],
+	"meta": {
+		"app": "godot-generator",
+		"format": "RGBA8888",
+		"frameTags": [
+			{
+				"direction": "forward",
+				"from": 0,
+				"name": "ground_slash",
+				"to": 2
+			},
+			{
+				"direction": "forward",
+				"from": 3,
+				"name": "air_slash",
+				"to": 5
+			},
+			{
+				"direction": "forward",
+				"from": 6,
+				"name": "hit_confirm",
+				"to": 7
+			}
+		],
+		"image": "combat_fx_sheet.png",
+		"scale": "1",
+		"size": {
+			"h": 32,
+			"w": 256
+		},
+		"version": "1.0"
+	}
+}

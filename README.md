@@ -1,6 +1,6 @@
-# Scrapyard Comet
+# Killer Queen
 
-Godot 4 prototype for a fast platformer-shooter with a jetpack, fuel pickups, simple drone enemies, and device-aware input prompts.
+Godot 4 prototype for a 2D jetpack action-metroidvania. The opening fantasy is a forced upward escape through a hive-city shaft; once you reach safety, the longer-term direction is a broader explorable world of ruins, overgrowth, and bio-industrial structures.
 
 ## Progress Video
 
@@ -13,10 +13,11 @@ Godot 4 prototype for a fast platformer-shooter with a jetpack, fuel pickups, si
   - run acceleration
   - jump buffer
   - coyote time
-  - feathered jetpack thrust
+  - burst-driven jetpack recovery
+  - wall slide and wall kick
   - forward blaster fire
-- Fuel cells that power the extraction pad
-- Drone enemies that patrol and can be shot down
+- Animated player and hazard sprite-sheet scaffolds
+- Drone and mine hazards
 - HUD prompts powered by `godot-input-prompts`
 - An Aseprite-ready art pipeline:
   - source files in `art/source`
@@ -43,6 +44,23 @@ The console binary already on this machine is:
 
 - `C:\Users\mzwin\Downloads\Godot_v4.6.1-stable_win64.exe\Godot_v4.6.1-stable_win64_console.exe`
 
+## Itch.io build
+
+This repo now includes a Windows desktop export preset for itch.io in `export_presets.cfg`.
+
+To build and zip the itch.io package on this machine:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\package_itchio.ps1
+```
+
+The script exports the game to `dist\itchio\windows\KillerQueen.exe`, copies the Windows README, and creates a zip ready for upload.
+
+Page copy and release notes live in:
+
+- `release/itchio/ITCHIO-PAGE-COPY.md`
+- `release/itchio/WINDOWS-README.txt`
+
 ## Aseprite workflow
 
 This repo is set up to use Aseprite as the sprite authoring tool, not as a runtime dependency inside Godot.
@@ -58,7 +76,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\export_aseprite.ps1
 
 ## Next high-value improvements
 
-- Replace the procedural placeholder art with Aseprite sprite sheets
-- Add a real combat enemy that shoots back
-- Add landing, jet burst, and hit animations
-- Expand the level into multiple rooms with checkpoints
+- Lock the first 20 seconds of the escape tower for feel and readability
+- Build the platform tileset so the world matches the player and hazard bar
+- Expand the backdrop into the sunset-ruin and overgrowth themes described in `DESIGN.md`
+- Turn the tower into the opening chapter of the eventual metroidvania map

@@ -1,100 +1,87 @@
 [gd_scene format=3 uid="uid://c4l37ss2p47kp"]
 
-[ext_resource type="Script" uid="uid://docscnjqhdt3h" path="res://scripts/main.gd" id="1_t2k7m"]
-[ext_resource type="Script" uid="uid://chey35p74tp0a" path="res://scripts/backdrop.gd" id="2_pq3fw"]
-[ext_resource type="Script" uid="uid://vib0xw18taob" path="res://addons/input_prompts/action_prompt/action_prompt.gd" id="3_7tv8r"]
-[ext_resource type="Texture2D" uid="uid://b381hogwff71v" path="res://addons/input_prompts/icons/pixel/xbox/left.png" id="3_85g3d"]
-[ext_resource type="Texture2D" uid="uid://bsi68uuv6g8gg" path="res://addons/input_prompts/icons/pixel/xbox/right.png" id="5_choun"]
-[ext_resource type="Texture2D" uid="uid://b1e23gj3k1klg" path="res://addons/input_prompts/icons/pixel/xbox/a.png" id="6_ya4ey"]
-[ext_resource type="Texture2D" uid="uid://72wnplctqqdm" path="res://addons/input_prompts/icons/pixel/xbox/xbox.png" id="7_eb6dy"]
-[ext_resource type="Texture2D" uid="uid://deib2tqcg5df0" path="res://addons/input_prompts/icons/pixel/xbox/x.png" id="8_trceg"]
-[ext_resource type="Texture2D" uid="uid://clcwaemf3uawa" path="res://addons/input_prompts/icons/pixel/xbox/y.png" id="9_a8y0u"]
+[ext_resource type="Script" uid="uid://b0wffwuprg6bi" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://chey35p74tp0a" path="res://scripts/backdrop.gd" id="2_backdrop"]
+[ext_resource type="PackedScene" path="res://scenes/intro_stage.tscn" id="3_stage"]
+[ext_resource type="Script" uid="uid://vib0xw18taob" path="res://addons/input_prompts/action_prompt/action_prompt.gd" id="4_prompt"]
+[ext_resource type="Script" uid="uid://c71hl4w5eevum" path="res://scripts/pixel_meter.gd" id="5_meter"]
+[ext_resource type="Texture2D" uid="uid://b381hogwff71v" path="res://addons/input_prompts/icons/pixel/xbox/left.png" id="5_trceg"]
+[ext_resource type="Script" uid="uid://ce7ydj3h4pudq" path="res://scripts/skin_preview.gd" id="6_preview"]
+[ext_resource type="Texture2D" uid="uid://bsi68uuv6g8gg" path="res://addons/input_prompts/icons/pixel/xbox/right.png" id="7_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://b1e23gj3k1klg" path="res://addons/input_prompts/icons/pixel/xbox/a.png" id="8_jkv2x"]
+[ext_resource type="Texture2D" uid="uid://72wnplctqqdm" path="res://addons/input_prompts/icons/pixel/xbox/xbox.png" id="9_jbj1t"]
+[ext_resource type="Texture2D" uid="uid://deib2tqcg5df0" path="res://addons/input_prompts/icons/pixel/xbox/x.png" id="10_muem4"]
+[ext_resource type="Texture2D" uid="uid://dv0r0pf7dwijj" path="res://addons/input_prompts/icons/pixel/xbox/b.png" id="11_dp3eg"]
+[ext_resource type="Texture2D" uid="uid://clcwaemf3uawa" path="res://addons/input_prompts/icons/pixel/xbox/y.png" id="12_0ld40"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top_panel"]
-bg_color = Color(0.0392157, 0.054902, 0.0784314, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.329412, 0.454902, 0.505882, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dock"]
-bg_color = Color(0.0588235, 0.0784314, 0.101961, 0.96)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.439216, 0.568627, 0.596078, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="InputEventKey" id="InputEventKey_jkv2x"]
+[sub_resource type="InputEventKey" id="InputEventKey_trceg"]
 device = -1
 keycode = 65
 unicode = 97
 
-[sub_resource type="InputEventKey" id="InputEventKey_jbj1t"]
+[sub_resource type="InputEventKey" id="InputEventKey_a8y0u"]
 keycode = 4194319
 
-[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_muem4"]
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_jkv2x"]
 button_index = 13
 
-[sub_resource type="InputEventJoypadMotion" id="InputEventJoypadMotion_dp3eg"]
+[sub_resource type="InputEventJoypadMotion" id="InputEventJoypadMotion_jbj1t"]
 axis_value = -1.0
 
-[sub_resource type="InputEventKey" id="InputEventKey_0ld40"]
+[sub_resource type="InputEventKey" id="InputEventKey_muem4"]
 device = -1
 keycode = 68
 unicode = 100
 
-[sub_resource type="InputEventKey" id="InputEventKey_gqmmt"]
+[sub_resource type="InputEventKey" id="InputEventKey_dp3eg"]
 keycode = 4194321
 
-[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_yc10j"]
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_0ld40"]
 button_index = 14
 
-[sub_resource type="InputEventJoypadMotion" id="InputEventJoypadMotion_jscy8"]
+[sub_resource type="InputEventJoypadMotion" id="InputEventJoypadMotion_gqmmt"]
 axis_value = 1.0
 
-[sub_resource type="InputEventKey" id="InputEventKey_pm3ni"]
+[sub_resource type="InputEventKey" id="InputEventKey_yc10j"]
 keycode = 32
 unicode = 32
 
-[sub_resource type="InputEventKey" id="InputEventKey_y6deb"]
+[sub_resource type="InputEventKey" id="InputEventKey_jscy8"]
 device = -1
 keycode = 87
 unicode = 119
 
-[sub_resource type="InputEventKey" id="InputEventKey_og1vs"]
+[sub_resource type="InputEventKey" id="InputEventKey_pm3ni"]
 keycode = 4194320
 
-[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_2wyq8"]
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_y6deb"]
 
-[sub_resource type="InputEventKey" id="InputEventKey_vxglm"]
+[sub_resource type="InputEventKey" id="InputEventKey_og1vs"]
 keycode = 4194325
 location = 1
 
-[sub_resource type="InputEventMouseButton" id="InputEventMouseButton_2f3dj"]
+[sub_resource type="InputEventMouseButton" id="InputEventMouseButton_2wyq8"]
 button_index = 2
 
-[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_yq6so"]
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_vxglm"]
 button_index = 5
 
-[sub_resource type="InputEventKey" id="InputEventKey_fv21b"]
+[sub_resource type="InputEventKey" id="InputEventKey_2f3dj"]
 keycode = 70
 unicode = 102
 
-[sub_resource type="InputEventMouseButton" id="InputEventMouseButton_tel4y"]
+[sub_resource type="InputEventMouseButton" id="InputEventMouseButton_yq6so"]
 button_index = 1
 
-[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_qkpxi"]
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_fv21b"]
 button_index = 2
+
+[sub_resource type="InputEventKey" id="InputEventKey_tel4y"]
+keycode = 81
+unicode = 113
+
+[sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_qkpxi"]
+button_index = 1
 
 [sub_resource type="InputEventKey" id="InputEventKey_5q0nq"]
 keycode = 82
@@ -103,11 +90,15 @@ unicode = 114
 [sub_resource type="InputEventJoypadButton" id="InputEventJoypadButton_dgi5k"]
 button_index = 3
 
-[node name="ScrapyardComet" type="Node2D" unique_id=2112695416]
-script = ExtResource("1_t2k7m")
+[node name="KillerQueen" type="Node2D" unique_id=2112695416]
+script = ExtResource("1_main")
 
 [node name="Backdrop" type="Node2D" parent="." unique_id=1071084690]
-script = ExtResource("2_pq3fw")
+script = ExtResource("2_backdrop")
+
+[node name="IntroStage" parent="." unique_id=283919403 instance=ExtResource("3_stage")]
+position = Vector2(448, 2936)
+scale = Vector2(0.82, 0.82)
 
 [node name="Platforms" type="Node2D" parent="." unique_id=536946264]
 
@@ -118,6 +109,10 @@ script = ExtResource("2_pq3fw")
 [node name="Projectiles" type="Node2D" parent="." unique_id=772322982]
 
 [node name="GoalAnchor" type="Node2D" parent="." unique_id=1199381035]
+
+[node name="IntroCamera2D" type="Camera2D" parent="." unique_id=193189616]
+enabled = false
+zoom = Vector2(1.18, 1.18)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=739897692]
 
@@ -137,112 +132,118 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
 
 [node name="Layout" type="VBoxContainer" parent="CanvasLayer/HUD/Margin" unique_id=748266466]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 12
 
 [node name="TopPanel" type="PanelContainer" parent="CanvasLayer/HUD/Margin/Layout" unique_id=177093883]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_top_panel")
 
 [node name="TopPadding" type="MarginContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel" unique_id=361276458]
 layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
 
 [node name="TopStack" type="VBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding" unique_id=1569439367]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 6
 
 [node name="HeaderRow" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack" unique_id=1182063907]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/HeaderRow" unique_id=1623150084]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.952941, 0.694118, 0.356863, 1)
-theme_override_font_sizes/font_size = 26
-text = "SCRAPYARD COMET"
+text = "OPEN LICENSE // KHEPRI-9"
 
 [node name="TimerLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/HeaderRow" unique_id=331859149]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 20
-text = "00.0s"
+text = "000m"
+horizontal_alignment = 2
 
 [node name="MessageLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack" unique_id=139893707]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.862745, 0.905882, 0.890196, 1)
-theme_override_font_sizes/font_size = 18
-text = "Collect the fuel cells, keep your thrusters fed, and hit the pad."
-autowrap_mode = 3
+text = "Board timer live. Tissue pays."
 
 [node name="ObjectiveLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack" unique_id=2024981337]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.592157, 0.815686, 0.862745, 1)
-theme_override_font_sizes/font_size = 16
-text = "Fuel cells left: 0"
+text = "DOCK RISE // board best 000m"
 
-[node name="StatsRow" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack" unique_id=339289182]
+[node name="StatsRow" type="HFlowContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack" unique_id=339289182]
 layout_mode = 2
-theme_override_constants/separation = 16
+size_flags_horizontal = 3
 
 [node name="FuelStack" type="VBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow" unique_id=257861006]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="FuelLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/FuelStack" unique_id=1861271256]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.592157, 0.815686, 0.862745, 1)
-theme_override_font_sizes/font_size = 13
-text = "JETPACK FUEL"
+text = "RESERVE"
 
-[node name="FuelBar" type="ProgressBar" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/FuelStack" unique_id=233904811]
+[node name="FuelBar" type="Control" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/FuelStack" unique_id=233904811]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 18)
+custom_minimum_size = Vector2(204, 16)
 layout_mode = 2
-value = 100.0
-show_percentage = false
+size_flags_horizontal = 3
+script = ExtResource("5_meter")
 
 [node name="HealthStack" type="VBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow" unique_id=1427316194]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="HealthLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/HealthStack" unique_id=343080748]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.952941, 0.627451, 0.470588, 1)
-theme_override_font_sizes/font_size = 13
-text = "SUIT INTEGRITY"
+text = "PLATING"
 
-[node name="HealthBar" type="ProgressBar" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/HealthStack" unique_id=639251903]
+[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/HealthStack" unique_id=639251903]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 18)
+custom_minimum_size = Vector2(188, 16)
 layout_mode = 2
-value = 100.0
-show_percentage = false
+size_flags_horizontal = 3
+script = ExtResource("5_meter")
+
+[node name="WeaponStatus" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow" unique_id=994974883]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="WeaponIcon" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/WeaponStatus" unique_id=1746866449]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="WeaponLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow/WeaponStatus" unique_id=1223556546]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SERVICE FANG"
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="StatsLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/TopPanel/TopPadding/TopStack/StatsRow" unique_id=1988216046]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 15
-text = "Cells 0/0   Drones 0/0"
+text = "CHAIN x00   FLOOR 000m"
 horizontal_alignment = 2
 
 [node name="Spacer" type="Control" parent="CanvasLayer/HUD/Margin/Layout" unique_id=1479687241]
@@ -252,131 +253,598 @@ size_flags_vertical = 3
 [node name="PromptDock" type="PanelContainer" parent="CanvasLayer/HUD/Margin/Layout" unique_id=2132783383]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_dock")
 
 [node name="PromptPadding" type="MarginContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock" unique_id=529906319]
 layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 14
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="PromptRow" type="HFlowContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding" unique_id=936068426]
 layout_mode = 2
-theme_override_constants/h_separation = 18
-theme_override_constants/v_separation = 10
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 6
 
 [node name="RunPrompt" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow" unique_id=577629804]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="RunLeft" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/RunPrompt" unique_id=723472518]
-custom_minimum_size = Vector2(34, 34)
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-texture = ExtResource("3_85g3d")
+texture = ExtResource("5_trceg")
 stretch_mode = 5
-script = ExtResource("3_7tv8r")
+script = ExtResource("4_prompt")
 action = "move_left"
 icon = 0
-events = Array[InputEvent]([SubResource("InputEventKey_jkv2x"), SubResource("InputEventKey_jbj1t"), SubResource("InputEventJoypadButton_muem4"), SubResource("InputEventJoypadMotion_dp3eg")])
+events = Array[InputEvent]([SubResource("InputEventKey_trceg"), SubResource("InputEventKey_a8y0u"), SubResource("InputEventJoypadButton_jkv2x"), SubResource("InputEventJoypadMotion_jbj1t")])
 
 [node name="RunRight" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/RunPrompt" unique_id=1857695900]
-custom_minimum_size = Vector2(34, 34)
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-texture = ExtResource("5_choun")
+texture = ExtResource("7_a8y0u")
 stretch_mode = 5
-script = ExtResource("3_7tv8r")
+script = ExtResource("4_prompt")
 action = "move_right"
 icon = 0
-events = Array[InputEvent]([SubResource("InputEventKey_0ld40"), SubResource("InputEventKey_gqmmt"), SubResource("InputEventJoypadButton_yc10j"), SubResource("InputEventJoypadMotion_jscy8")])
+events = Array[InputEvent]([SubResource("InputEventKey_muem4"), SubResource("InputEventKey_dp3eg"), SubResource("InputEventJoypadButton_0ld40"), SubResource("InputEventJoypadMotion_gqmmt")])
 
 [node name="RunLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/RunPrompt" unique_id=978713564]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 16
-text = "Run"
+text = "VECTOR"
 vertical_alignment = 1
 
 [node name="JumpPrompt" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow" unique_id=80022240]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="JumpIcon" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/JumpPrompt" unique_id=1429314781]
-custom_minimum_size = Vector2(34, 34)
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-texture = ExtResource("6_ya4ey")
+texture = ExtResource("8_jkv2x")
 stretch_mode = 5
-script = ExtResource("3_7tv8r")
+script = ExtResource("4_prompt")
 action = "jump"
 icon = 0
-events = Array[InputEvent]([SubResource("InputEventKey_pm3ni"), SubResource("InputEventKey_y6deb"), SubResource("InputEventKey_og1vs"), SubResource("InputEventJoypadButton_2wyq8")])
+events = Array[InputEvent]([SubResource("InputEventKey_yc10j"), SubResource("InputEventKey_jscy8"), SubResource("InputEventKey_pm3ni"), SubResource("InputEventJoypadButton_y6deb")])
 
 [node name="JumpLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/JumpPrompt" unique_id=136974870]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 16
-text = "Jump"
+text = "JUMP"
 vertical_alignment = 1
 
 [node name="JetpackPrompt" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow" unique_id=1187965678]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="JetpackIcon" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/JetpackPrompt" unique_id=255458451]
-custom_minimum_size = Vector2(34, 34)
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-texture = ExtResource("7_eb6dy")
+texture = ExtResource("9_jbj1t")
 stretch_mode = 5
-script = ExtResource("3_7tv8r")
+script = ExtResource("4_prompt")
 action = "jetpack"
 icon = 0
-events = Array[InputEvent]([SubResource("InputEventKey_vxglm"), SubResource("InputEventMouseButton_2f3dj"), SubResource("InputEventJoypadButton_yq6so")])
+events = Array[InputEvent]([SubResource("InputEventKey_og1vs"), SubResource("InputEventMouseButton_2wyq8"), SubResource("InputEventJoypadButton_vxglm")])
 
 [node name="JetpackLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/JetpackPrompt" unique_id=1649611845]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 16
-text = "Jetpack"
+text = "BURST"
 vertical_alignment = 1
 
 [node name="ShootPrompt" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow" unique_id=1853389092]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="ShootIcon" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/ShootPrompt" unique_id=1755687743]
-custom_minimum_size = Vector2(34, 34)
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-texture = ExtResource("8_trceg")
+texture = ExtResource("10_muem4")
 stretch_mode = 5
-script = ExtResource("3_7tv8r")
+script = ExtResource("4_prompt")
 action = "shoot"
 icon = 0
-events = Array[InputEvent]([SubResource("InputEventKey_fv21b"), SubResource("InputEventMouseButton_tel4y"), SubResource("InputEventJoypadButton_qkpxi")])
+events = Array[InputEvent]([SubResource("InputEventKey_2f3dj"), SubResource("InputEventMouseButton_yq6so"), SubResource("InputEventJoypadButton_fv21b")])
 
 [node name="ShootLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/ShootPrompt" unique_id=1226733419]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 16
-text = "Shoot"
+text = "TRIGGER"
+vertical_alignment = 1
+
+[node name="SwapPrompt" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow" unique_id=1536092241]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SwapIcon" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/SwapPrompt" unique_id=1419856935]
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+texture = ExtResource("11_dp3eg")
+stretch_mode = 5
+script = ExtResource("4_prompt")
+action = "swap_weapon"
+icon = 0
+events = Array[InputEvent]([SubResource("InputEventKey_tel4y"), SubResource("InputEventJoypadButton_qkpxi")])
+
+[node name="SwapLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/SwapPrompt" unique_id=1206881308]
+layout_mode = 2
+text = "ALT ARM"
 vertical_alignment = 1
 
 [node name="RestartPrompt" type="HBoxContainer" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow" unique_id=2033949182]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="RestartIcon" type="TextureRect" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/RestartPrompt" unique_id=2099370029]
-custom_minimum_size = Vector2(34, 34)
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-texture = ExtResource("9_a8y0u")
+texture = ExtResource("12_0ld40")
 stretch_mode = 5
-script = ExtResource("3_7tv8r")
+script = ExtResource("4_prompt")
 action = "restart"
 icon = 0
 events = Array[InputEvent]([SubResource("InputEventKey_5q0nq"), SubResource("InputEventJoypadButton_dgi5k")])
 
 [node name="RestartLabel" type="Label" parent="CanvasLayer/HUD/Margin/Layout/PromptDock/PromptPadding/PromptRow/RestartPrompt" unique_id=2037912410]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.839216, 0.913725, 0.917647, 1)
-theme_override_font_sizes/font_size = 16
-text = "Restart"
+text = "REDEPLOY"
 vertical_alignment = 1
+
+[node name="FrontDoor" type="Control" parent="CanvasLayer" unique_id=2128618141]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="CanvasLayer/FrontDoor" unique_id=2068091172]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="Layout" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin" unique_id=1976339984]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ConsoleRow" type="GridContainer" parent="CanvasLayer/FrontDoor/Margin/Layout" unique_id=1657323749]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 14
+columns = 2
+
+[node name="MenuWindow" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow" unique_id=1885312346]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(316, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/MenuWindow" unique_id=537021970]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/MenuWindow/Padding" unique_id=223828463]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MenuBadge" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/MenuWindow/Padding/Stack" unique_id=138822721]
+layout_mode = 2
+text = "BAY COMMAND"
+
+[node name="MenuList" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/MenuWindow/Padding/Stack" unique_id=415925105]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="MenuLegend" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/MenuWindow/Padding/Stack" unique_id=511198209]
+layout_mode = 2
+text = "UP / DOWN MOVE"
+
+[node name="MenuLegendB" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/MenuWindow/Padding/Stack" unique_id=592846151]
+layout_mode = 2
+text = "ATTACK OR A SELECT"
+
+[node name="TitleOverlay" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow" unique_id=1400138447]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay" unique_id=325073872]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding" unique_id=1004228191]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="FrontModeLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack" unique_id=214153945]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DOCK 01 // LIVE"
+
+[node name="GameTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack" unique_id=658881633]
+layout_mode = 2
+text = "KILLER
+QUEEN"
+
+[node name="Tagline" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack" unique_id=319119288]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Crash in hot. Claim a starter. Cut upward."
+autowrap_mode = 3
+
+[node name="ReadoutRow" type="GridContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack" unique_id=1196635593]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="SectorFrame" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow" unique_id=1109017645]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/SectorFrame" unique_id=897995164]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/SectorFrame/Padding" unique_id=574915503]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SectorTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/SectorFrame/Padding/Stack" unique_id=884823075]
+layout_mode = 2
+text = "SECTOR 01"
+
+[node name="TitleStatusLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/SectorFrame/Padding/Stack" unique_id=1310970906]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Dock 13 live. Ship clamps still hot."
+autowrap_mode = 3
+
+[node name="LoadoutFrame" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow" unique_id=1830010347]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/LoadoutFrame" unique_id=437629063]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/LoadoutFrame/Padding" unique_id=1016665202]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LoadoutTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/LoadoutFrame/Padding/Stack" unique_id=518847020]
+layout_mode = 2
+text = "LOADOUT"
+
+[node name="TitleLoadoutLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack/ReadoutRow/LoadoutFrame/Padding/Stack" unique_id=2095011885]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Starter racks waiting. Fang left. Blaster right."
+autowrap_mode = 3
+
+[node name="StartPromptLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/TitleOverlay/Padding/Stack" unique_id=65689317]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SELECT A DROP ORDER"
+
+[node name="CustomizeWindow" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow" unique_id=810235232]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow" unique_id=1972038902]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding" unique_id=1292953462]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CustomizeTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack" unique_id=1670587091]
+layout_mode = 2
+text = "ARMORY BAY // LIVE PREVIEW"
+
+[node name="SkinStatusLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack" unique_id=1097474538]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Select a dock suit."
+autowrap_mode = 3
+
+[node name="PreviewFrame" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack" unique_id=2110846576]
+custom_minimum_size = Vector2(0, 304)
+layout_mode = 2
+
+[node name="PreviewPadding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack/PreviewFrame" unique_id=736306719]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SkinPreview" type="Control" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack/PreviewFrame/PreviewPadding" unique_id=1776296851]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 284)
+layout_mode = 2
+script = ExtResource("6_preview")
+
+[node name="SkinList" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack" unique_id=1775629680]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SkinHintLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/CustomizeWindow/Padding/Stack" unique_id=1519914794]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ATTACK EQUIP    LEFT / RIGHT FX PREVIEW    CANCEL BACK"
+autowrap_mode = 3
+
+[node name="SettingsWindow" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow" unique_id=198580768]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow" unique_id=2093824334]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Row" type="GridContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding" unique_id=1246013747]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="Readout" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row" unique_id=281492112]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SettingsConsoleTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/Readout" unique_id=2121925803]
+layout_mode = 2
+text = "SHIP CONSOLE"
+
+[node name="SettingsSectionLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/Readout" unique_id=877780253]
+unique_name_in_owner = true
+layout_mode = 2
+text = "AUDIO"
+
+[node name="SettingsSummaryLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/Readout" unique_id=759642167]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Dock mix, scale, and prompts route through here."
+autowrap_mode = 3
+
+[node name="RemapPromptLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/Readout" unique_id=539564204]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Press a key or button for remap."
+autowrap_mode = 3
+
+[node name="SettingsFooterLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/Readout" unique_id=339197083]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ATTACK CHANGE    JUMP APPLY    SWAP DEFAULTS    CANCEL BACK"
+autowrap_mode = 3
+
+[node name="ListColumn" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row" unique_id=394148973]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SettingsTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/ListColumn" unique_id=1415620427]
+layout_mode = 2
+text = "TUNE"
+
+[node name="SettingsScroll" type="ScrollContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/ListColumn" unique_id=469918728]
+custom_minimum_size = Vector2(0, 292)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SettingsList" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/ConsoleRow/SettingsWindow/Padding/Row/ListColumn/SettingsScroll" unique_id=621204364]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="ChoiceSpacer" type="Control" parent="CanvasLayer/FrontDoor/Margin/Layout" unique_id=466994631]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="StarterChoiceWrap" type="HBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout" unique_id=1120134931]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="LeftGutter" type="Control" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap" unique_id=125721772]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StarterChoice" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap" unique_id=937378790]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChoicePadding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice" unique_id=1967949300]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="ChoiceStack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding" unique_id=1079798328]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChoiceTitle" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack" unique_id=1767699880]
+layout_mode = 2
+text = "CLAIM ONE RACK"
+
+[node name="StarterHintLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack" unique_id=610374150]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Board sprites mark live claims."
+
+[node name="Racks" type="GridContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack" unique_id=1175453589]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="BladeCard" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks" unique_id=543045023]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/BladeCard" unique_id=2093959493]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/BladeCard/Padding" unique_id=979075572]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BladeArt" type="TextureRect" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/BladeCard/Padding/Stack" unique_id=2124110001]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(96, 44)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="BladeName" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/BladeCard/Padding/Stack" unique_id=700966858]
+layout_mode = 2
+text = "SERVICE FANG"
+
+[node name="BladeDesc" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/BladeCard/Padding/Stack" unique_id=168588641]
+layout_mode = 2
+text = "Close cut. Better tissue bonus."
+
+[node name="BladeStatusLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/BladeCard/Padding/Stack" unique_id=1344997072]
+unique_name_in_owner = true
+layout_mode = 2
+text = "CLOSE BONUS   REBOUND   HOT DROP"
+
+[node name="GunCard" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks" unique_id=14094037]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Padding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/GunCard" unique_id=1282008221]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="Stack" type="VBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/GunCard/Padding" unique_id=1396931344]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="GunArt" type="TextureRect" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/GunCard/Padding/Stack" unique_id=1158829507]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(96, 44)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="GunName" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/GunCard/Padding/Stack" unique_id=20248242]
+layout_mode = 2
+text = "DOCK BLASTER"
+
+[node name="GunDesc" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/GunCard/Padding/Stack" unique_id=1539649813]
+layout_mode = 2
+text = "Safer lane fire. Lower close bonus."
+
+[node name="GunStatusLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap/StarterChoice/ChoicePadding/ChoiceStack/Racks/GunCard/Padding/Stack" unique_id=1825305336]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LANE FIRE   TWO-SHELL   CLEANER PLAY"
+
+[node name="RightGutter" type="Control" parent="CanvasLayer/FrontDoor/Margin/Layout/StarterChoiceWrap" unique_id=2029597907]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FooterBar" type="PanelContainer" parent="CanvasLayer/FrontDoor/Margin/Layout" unique_id=537199120]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FooterPadding" type="MarginContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/FooterBar" unique_id=986254759]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="FooterRow" type="HBoxContainer" parent="CanvasLayer/FrontDoor/Margin/Layout/FooterBar/FooterPadding" unique_id=363462493]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="IntroCaptionLabel" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/FooterBar/FooterPadding/FooterRow" unique_id=200266237]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Shipfall live. Claim a starter on deck."
+
+[node name="FooterHint" type="Label" parent="CanvasLayer/FrontDoor/Margin/Layout/FooterBar/FooterPadding/FooterRow" unique_id=1233515482]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LIVE TITLE FRONT"
+horizontal_alignment = 2

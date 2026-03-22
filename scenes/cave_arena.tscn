@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/cave_arena.gd" id="1_arena"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_boss_trigger"]
+size = Vector2(132, 180)
+
+[node name="CaveArena" type="Node2D"]
+script = ExtResource("1_arena")
+
+[node name="EntryMarker" type="Marker2D" parent="."]
+position = Vector2(952, 170)
+
+[node name="BossSpawnMarker" type="Marker2D" parent="."]
+position = Vector2(1292, 238)
+
+[node name="RewardMarker" type="Marker2D" parent="."]
+position = Vector2(1292, 200)
+
+[node name="ExitMarker" type="Marker2D" parent="."]
+position = Vector2(1528, 236)
+
+[node name="LeftGateMarker" type="Marker2D" parent="."]
+position = Vector2(1072, 218)
+
+[node name="RightGateMarker" type="Marker2D" parent="."]
+position = Vector2(1498, 218)
+
+[node name="BossTrigger" type="Area2D" parent="."]
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BossTrigger"]
+position = Vector2(1120, 192)
+shape = SubResource("RectangleShape2D_boss_trigger")

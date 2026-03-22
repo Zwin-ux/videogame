@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat_art_review.gd" id="1_ufvfr"]
+
+[node name="CombatArtReview" type="Node2D"]
+script = ExtResource("1_ufvfr")
+
+[node name="DarkPlayer" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(178, 198)
+scale = Vector2(4, 4)
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="LightPlayer" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(484, 198)
+scale = Vector2(4, 4)
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="SlashFx" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(548, 165)
+scale = Vector2(4, 4)
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="DronePreview" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(248, 148)
+scale = Vector2(3.5, 3.5)
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="MinePreview" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(422, 166)
+scale = Vector2(3.5, 3.5)
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)

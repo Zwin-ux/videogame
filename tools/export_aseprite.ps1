@@ -10,12 +10,22 @@ if ($AsepritePath) {
     $candidates += $AsepritePath
 }
 
+$envPath = [Environment]::GetEnvironmentVariable("ASEPRITE_PATH", "User")
+if ($env:ASEPRITE_PATH) {
+    $candidates += $env:ASEPRITE_PATH
+}
+if ($envPath) {
+    $candidates += $envPath
+}
+
 $command = Get-Command aseprite -ErrorAction SilentlyContinue
 if ($command) {
     $candidates += $command.Source
 }
 
 $candidates += @(
+    "$env:USERPROFILE\\Tools\\Aseprite\\aseprite.exe",
+    "$env:USERPROFILE\\Tools\\Aseprite\\build\\bin\\aseprite.exe",
     "$env:ProgramFiles\\Aseprite\\aseprite.exe",
     "${env:ProgramFiles(x86)}\\Aseprite\\aseprite.exe"
 )
@@ -44,10 +54,21 @@ foreach ($file in $files) {
     $sheet = Join-Path $exportRoot "$name.png"
     $data = Join-Path $exportRoot "$name.json"
 
-    & $aseprite --batch $file.FullName --sheet $sheet --data $data --format json-array
-    if ($LASTEXITCODE -ne 0) {
+    $process = Start-Process -FilePath $aseprite -ArgumentList @(
+        "--batch",
+        $file.FullName,
+        "--sheet",
+        $sheet,
+        "--data",
+        $data,
+        "--format",
+        "json-array",
+        "--list-tags"
+    ) -Wait -NoNewWindow -PassThru
+
+    if ($process.ExitCode -ne 0) {
         Write-Error "Failed to export $($file.FullName)"
-        exit $LASTEXITCODE
+        exit $process.ExitCode
     }
 
     Write-Host "Exported $name"

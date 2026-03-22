@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/intro_stage.gd" id="1_intro_stage"]
+
+[node name="IntroStage" type="Node2D"]
+script = ExtResource("1_intro_stage")
+
+[node name="LandingMarker" type="Marker2D" parent="."]
+position = Vector2(-28, -6)
+
+[node name="PlayerDropMarker" type="Marker2D" parent="."]
+position = Vector2(-180, -74)
+
+[node name="RunStartMarker" type="Marker2D" parent="."]
+position = Vector2(-360, -6)
+
+[node name="TitleHeroMarker" type="Marker2D" parent="."]
+position = Vector2(-232, -78)
+
+[node name="BladeStand" type="Marker2D" parent="."]
+position = Vector2(150, -6)
+
+[node name="GunStand" type="Marker2D" parent="."]
+position = Vector2(342, -6)
+
+[node name="IntroCameraAnchor" type="Marker2D" parent="."]
+position = Vector2(-92, -42)
+
+[node name="TitleCameraAnchor" type="Marker2D" parent="."]
+position = Vector2(-208, -94)

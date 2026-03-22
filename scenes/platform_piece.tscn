@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/platform_piece.gd" id="1_3m81a"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6rn6a"]
+size = Vector2(160, 24)
+
+[node name="PlatformPiece" type="StaticBody2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_3m81a")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_6rn6a")
+
+[node name="TriggerArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerArea"]
+shape = SubResource("RectangleShape2D_6rn6a")

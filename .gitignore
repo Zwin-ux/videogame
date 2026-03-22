@@ -1,2 +1,5 @@
 .godot/
 .import/
+.gstack/
+tmp_video_frames/
+dist/

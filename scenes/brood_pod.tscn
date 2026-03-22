@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/brood_pod.gd" id="1_8g2e0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3qyw8"]
+radius = 18.0
+
+[node name="BroodPod" type="Area2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_8g2e0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_3qyw8")

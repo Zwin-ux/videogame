@@ -12,3 +12,10 @@ script = ExtResource("1_11b1k")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_ng6ry")
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -1)
+z_index = 1
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)

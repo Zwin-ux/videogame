@@ -1,0 +1,999 @@
+{
+	"frames": [
+		{
+			"duration": 120,
+			"filename": "idle_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 180,
+			"filename": "idle_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 32,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 110,
+			"filename": "idle_blade_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 64,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 160,
+			"filename": "idle_blade_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 96,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "run_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 128,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 70,
+			"filename": "run_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 160,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "run_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 192,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 70,
+			"filename": "run_3",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 224,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 45,
+			"filename": "jump_up_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 256,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 65,
+			"filename": "jump_up_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 288,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "fall_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 320,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 70,
+			"filename": "fall_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 352,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "land_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 384,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 60,
+			"filename": "land_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 416,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 70,
+			"filename": "wall_slide_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 448,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 90,
+			"filename": "wall_slide_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 480,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 35,
+			"filename": "wall_kick_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 512,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 65,
+			"filename": "wall_kick_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 544,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 28,
+			"filename": "burst_start_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 576,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 24,
+			"filename": "burst_start_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 608,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 30,
+			"filename": "burst_loop_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 640,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 30,
+			"filename": "burst_loop_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 672,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 28,
+			"filename": "burst_end_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 704,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 35,
+			"filename": "burst_end_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 736,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 45,
+			"filename": "gun_ground_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 768,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 20,
+			"filename": "gun_ground_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 800,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "gun_ground_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 832,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 45,
+			"filename": "gun_air_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 864,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 20,
+			"filename": "gun_air_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 896,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 50,
+			"filename": "gun_air_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 928,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 70,
+			"filename": "blade_ground_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 960,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 25,
+			"filename": "blade_ground_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 992,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 70,
+			"filename": "blade_ground_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1024,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 55,
+			"filename": "blade_air_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1056,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 25,
+			"filename": "blade_air_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1088,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 60,
+			"filename": "blade_air_2",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1120,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 45,
+			"filename": "hurt_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1152,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 65,
+			"filename": "hurt_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1184,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 45,
+			"filename": "hurt_blade_0",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1216,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		},
+		{
+			"duration": 65,
+			"filename": "hurt_blade_1",
+			"frame": {
+				"h": 32,
+				"w": 32,
+				"x": 1248,
+				"y": 0
+			},
+			"rotated": false,
+			"sourceSize": {
+				"h": 32,
+				"w": 32
+			},
+			"spriteSourceSize": {
+				"h": 32,
+				"w": 32,
+				"x": 0,
+				"y": 0
+			},
+			"trimmed": false
+		}
+	],
+	"meta": {
+		"app": "godot-generator",
+		"format": "RGBA8888",
+		"frameTags": [
+			{
+				"direction": "forward",
+				"from": 0,
+				"name": "idle",
+				"to": 1
+			},
+			{
+				"direction": "forward",
+				"from": 2,
+				"name": "idle_blade",
+				"to": 3
+			},
+			{
+				"direction": "forward",
+				"from": 4,
+				"name": "run",
+				"to": 7
+			},
+			{
+				"direction": "forward",
+				"from": 8,
+				"name": "jump_up",
+				"to": 9
+			},
+			{
+				"direction": "forward",
+				"from": 10,
+				"name": "fall",
+				"to": 11
+			},
+			{
+				"direction": "forward",
+				"from": 12,
+				"name": "land",
+				"to": 13
+			},
+			{
+				"direction": "forward",
+				"from": 14,
+				"name": "wall_slide",
+				"to": 15
+			},
+			{
+				"direction": "forward",
+				"from": 16,
+				"name": "wall_kick",
+				"to": 17
+			},
+			{
+				"direction": "forward",
+				"from": 18,
+				"name": "burst_start",
+				"to": 19
+			},
+			{
+				"direction": "forward",
+				"from": 20,
+				"name": "burst_loop",
+				"to": 21
+			},
+			{
+				"direction": "forward",
+				"from": 22,
+				"name": "burst_end",
+				"to": 23
+			},
+			{
+				"direction": "forward",
+				"from": 24,
+				"name": "gun_ground",
+				"to": 26
+			},
+			{
+				"direction": "forward",
+				"from": 27,
+				"name": "gun_air",
+				"to": 29
+			},
+			{
+				"direction": "forward",
+				"from": 30,
+				"name": "blade_ground",
+				"to": 32
+			},
+			{
+				"direction": "forward",
+				"from": 33,
+				"name": "blade_air",
+				"to": 35
+			},
+			{
+				"direction": "forward",
+				"from": 36,
+				"name": "hurt",
+				"to": 37
+			},
+			{
+				"direction": "forward",
+				"from": 38,
+				"name": "hurt_blade",
+				"to": 39
+			}
+		],
+		"image": "player_sheet.png",
+		"scale": "1",
+		"size": {
+			"h": 32,
+			"w": 1280
+		},
+		"version": "1.0"
+	}
+}

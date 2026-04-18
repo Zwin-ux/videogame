@@ -13,6 +13,7 @@ const TESTS := [
 	"res://tests/test_hit_stop.gd",
 	"res://tests/test_music_engine.gd",
 	"res://tests/test_wiring.gd",
+	"res://tests/test_juice_integration.gd",
 ]
 
 

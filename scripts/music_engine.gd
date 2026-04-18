@@ -41,8 +41,10 @@ var _muted := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_players()
-	_load_stems(_track)
 	set_intensity(0.0)
+	# Defer stem synthesis off the first frame. Five 2-second procedural
+	# buffers is cheap but still measurable; boot must stay snappy.
+	call_deferred("_load_stems", _track)
 
 
 func _process(delta: float) -> void:
@@ -150,8 +152,8 @@ func _stem_db_for(stem: String, intensity: float) -> float:
 	return lerp(-24.0, -6.0, gain)
 
 
-const _SAMPLE_RATE := 22050
-const _LOOP_SECONDS := 4.0
+const _SAMPLE_RATE := 11025
+const _LOOP_SECONDS := 2.0
 
 
 func _synthesize_stem(stem: String) -> AudioStreamWAV:

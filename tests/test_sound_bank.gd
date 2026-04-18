@@ -7,8 +7,11 @@ const Ass := preload("res://tests/ass.gd")
 func run() -> Dictionary:
 	var a: Ass = Ass.new("sound_bank")
 	var sb: Node = SoundBankScript.new()
-	# Manually bootstrap since we're not attached to the scene tree.
+	# Manually bootstrap since we're not attached to the scene tree. In
+	# production streams synthesise lazily on first play(); tests still want
+	# deterministic pre-bake to validate the manifest.
 	sb._ready()
+	sb.call("_prebake_streams")
 
 	# Manifest completeness.
 	var expected: Array = ["gun_fire", "gun_fire_pressure", "gun_fire_breaker", "gun_hit",

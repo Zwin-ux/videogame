@@ -8,6 +8,8 @@ func run() -> Dictionary:
 	var a: Ass = Ass.new("music_engine")
 	var me: Node = MusicEngineScript.new()
 	me._ready()
+	# _ready() call-defers _load_stems; tests need it synchronous.
+	me.call("_load_stems", "dock_breach")
 
 	# All five stems exist and have a stream.
 	for stem in me.STEMS:

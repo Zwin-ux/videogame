@@ -133,9 +133,10 @@ func _feel_on_boss_hit(prev_hp: int, new_hp: int) -> void:
 		var base := 0.5 + (1.0 - float(new_hp) / float(maxi(max_health, 1))) * 0.4
 		me.call("set_intensity", clampf(base, 0.0, 1.0))
 
-	var thresholds := [int(max_health * 0.66), int(max_health * 0.33)]
-	for breakpoint in thresholds:
-		if prev_hp > breakpoint and new_hp <= breakpoint:
+	var phase_thresholds: Array = [int(max_health * 0.66), int(max_health * 0.33)]
+	for threshold in phase_thresholds:
+		var hp_line: int = int(threshold)
+		if prev_hp > hp_line and new_hp <= hp_line:
 			if sb != null:
 				sb.call("play", "rival_phase_change")
 			if cs != null:

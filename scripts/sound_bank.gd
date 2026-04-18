@@ -46,14 +46,8 @@ var _muted := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_pool()
-	_prebake_streams()
-
-
-func _enter_tree() -> void:
-	# Autoloads may be queried in the same frame they're instantiated, before
-	# _ready runs. Prebake defensively so play() never sees an empty bank.
-	if _streams.is_empty():
-		_prebake_streams()
+	# Streams synthesize lazily on first play() per name. Keeps autoload boot
+	# cheap on the editor and the initial game frame.
 
 
 ## Play a sound by manifest name. Returns true if audible, false if unknown or muted.
@@ -144,27 +138,32 @@ func _next_player() -> AudioStreamPlayer:
 
 
 func _get_stream(name: String) -> AudioStream:
-	# Lazy prebake — the autoload may be queried before its _ready has fired.
-	if _streams.is_empty() and MANIFEST.has(name):
-		_prebake_streams()
 	if _streams.has(name):
 		return _streams[name]
-	# Opportunistic lazy-load of authored file if it exists.
+	# Authored .ogg wins over procedural — load on first miss.
 	var path: String = AUDIO_DIR + name + ".ogg"
 	if ResourceLoader.exists(path):
 		var authored: Resource = ResourceLoader.load(path)
 		if authored is AudioStream:
 			_streams[name] = authored
 			return authored
+	# Fall back to procedural synthesis for the single requested name.
+	if MANIFEST.has(name):
+		var cfg: Dictionary = MANIFEST[name]
+		var stream: AudioStream = _synthesize(cfg)
+		if stream != null:
+			_streams[name] = stream
+			return stream
 	return null
 
 
+## Optional: eager-bake all SFX (only useful for tests or load-screen warm-up).
 func _prebake_streams() -> void:
 	for name in MANIFEST.keys():
 		if _streams.has(name):
 			continue
 		var cfg: Dictionary = MANIFEST[name]
-		var stream := _synthesize(cfg)
+		var stream: AudioStream = _synthesize(cfg)
 		if stream != null:
 			_streams[name] = stream
 
@@ -197,7 +196,7 @@ func _synthesize(cfg: Dictionary) -> AudioStream:
 	return null
 
 
-const _SAMPLE_RATE := 22050
+const _SAMPLE_RATE := 11025
 
 
 func _new_wav(data: PackedByteArray) -> AudioStreamWAV:

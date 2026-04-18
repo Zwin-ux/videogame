@@ -49,4 +49,18 @@ func run() -> Dictionary:
 	a.ne(String(sky.get("music_track", "")), "", "skyline_shift has music_track")
 	a.ne(dock.get("music_track"), sky.get("music_track"), "missions use different tracks")
 
+	# Flow enum is a known value (not a typo), and missions use different flows.
+	a.eq(dock.get("flow"), MissionDescriptor.FLOW_FULL, "dock_breach flow = full")
+	a.eq(sky.get("flow"), MissionDescriptor.FLOW_SKYLINE_ONLY, "skyline_shift flow = skyline_only")
+
+	# Backdrop uses the constants, not magic ints.
+	a.eq(dock.get("backdrop_mode"), MissionDescriptor.BACKDROP_HIVE_SHAFT, "dock_breach backdrop constant")
+	a.eq(sky.get("backdrop_mode"), MissionDescriptor.BACKDROP_SUNSET_RUIN, "skyline_shift backdrop constant")
+
+	# Opening copy: dock_breach is null (fall through to BountyFeed opener),
+	# skyline_shift supplies its own line.
+	a.is_null(dock.get("opening_message"), "dock_breach yields opener to BountyFeed")
+	a.ne(sky.get("opening_message"), null, "skyline_shift supplies its own opener")
+	a.ne(String(sky.get("opening_message", "")), "", "skyline_shift opener non-empty")
+
 	return a.report()

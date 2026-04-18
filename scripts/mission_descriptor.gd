@@ -21,27 +21,45 @@ const KEY_SKYLINE_SHIFT := "skyline_shift"
 const REGION_HIVE := "hive_shaft"
 const REGION_SKYLINE := "sunset_ruin_skyline"
 
+## Backdrop mode enum mirrored from main.gd so the registry reads cleanly.
+## Keep these two in sync with `main.gd` BACKDROP_* constants.
+const BACKDROP_HIVE_SHAFT := 1
+const BACKDROP_SUNSET_RUIN := 2
+
+## Flow identifies the mission's structure: `full` runs Hive then Skyline
+## then the region boss; `skyline_only` skips the Hive half and starts the
+## player directly at the mountain slice. Add new flows here — do not
+## duplicate the branch in main.gd.
+const FLOW_FULL := "full"
+const FLOW_SKYLINE_ONLY := "skyline_only"
+
 ## Static registry. Fields match the subset of main.gd behaviour we need to
-## parametrise for Day 1.
+## parametrise.
+##   starting_region — REGION_* string, drives geometry + anchors
+##   backdrop_mode   — BACKDROP_* enum; main.gd reads it directly
+##   spawn_override  — Vector2 or null; null means "use main.gd default"
+##   opening_message — null means "fall back to BountyFeed weapon-aware copy"
+##   flow            — controls the run structure (see FLOW_* constants)
+##   music_track     — picked up by MusicEngine.set_track() on run start
 const MISSIONS := {
 	KEY_DOCK_BREACH: {
 		"key": KEY_DOCK_BREACH,
 		"display_name": "Dock Breach",
 		"starting_region": REGION_HIVE,
-		"backdrop_mode": 1,          # BACKDROP_HIVE_SHAFT
-		"spawn_override": null,      # use main.gd default spawn
-		"opening_message": "Sanctuary drop confirmed. Burn the Hive Shaft anchors and expose the Brood Warden.",
-		"flow": "full",              # hive shaft -> transfer -> skyline -> boss
+		"backdrop_mode": BACKDROP_HIVE_SHAFT,
+		"spawn_override": null,
+		"opening_message": null,     # keep BountyFeed weapon-aware opener
+		"flow": FLOW_FULL,
 		"music_track": "dock_breach",
 	},
 	KEY_SKYLINE_SHIFT: {
 		"key": KEY_SKYLINE_SHIFT,
 		"display_name": "Skyline Shift",
 		"starting_region": REGION_SKYLINE,
-		"backdrop_mode": 2,          # BACKDROP_SUNSET_RUIN
+		"backdrop_mode": BACKDROP_SUNSET_RUIN,
 		"spawn_override": Vector2(1002.0, 500.0),  # SKYLINE_ENTRY_POSITION
 		"opening_message": "Lift crest confirmed. Skyline's own hunters don't care that the hive is dying.",
-		"flow": "skyline_only",      # skip hive, start at mountain slice
+		"flow": FLOW_SKYLINE_ONLY,
 		"music_track": "skyline",
 	},
 }

@@ -520,10 +520,26 @@ func _ready() -> void:
 	_ensure_transfer_line()
 	_spawn_player()
 	_apply_selected_skin()
+	# 0.3 Skyline Shift — dev/QA can pick a mission via CLI:
+	#   godot --mission=skyline_shift
+	_apply_cli_mission_override()
 	_enter_title()
 	var boot_mode := String(game_flow.call("consume_boot_mode", "contract")) if game_flow != null else "contract"
 	if boot_mode == "contract":
 		_start_landing_intro()
+
+
+func _apply_cli_mission_override() -> void:
+	var args: PackedStringArray = OS.get_cmdline_args()
+	for arg in args:
+		if arg.begins_with("--mission="):
+			var key: String = arg.substr("--mission=".length())
+			if MissionDescriptor.exists(key):
+				set_current_mission(key)
+				print("[main] CLI mission override: %s" % key)
+			else:
+				push_warning("[main] CLI --mission=%s unknown; using default" % key)
+			return
 
 
 func _process(delta: float) -> void:
@@ -1217,6 +1233,9 @@ func _commit_starter_choice(mode: String) -> void:
 ## point, and backdrop per-descriptor instead of hardcoding Dock Breach.
 const MissionDescriptor = preload("res://scripts/mission_descriptor.gd")
 var _current_mission_key: String = MissionDescriptor.KEY_DOCK_BREACH
+## Live spawn of the active run — mission-aware. Altitude meters use this
+## so Skyline-start missions do not report bogus "above origin" numbers.
+var _run_spawn_point: Vector2 = Vector2.ZERO
 
 
 ## Public entry — call this before _begin_playable_slice to pick a mission.
@@ -1235,15 +1254,21 @@ func get_current_mission() -> String:
 
 func _begin_playable_slice() -> void:
 	_reset_run()
-	var opening: String = String(MissionDescriptor.field(_current_mission_key, "opening_message", "Sanctuary drop confirmed. Burn the Hive Shaft anchors and expose the Brood Warden."))
-	_set_message(opening)
+	# Descriptor opening is an OPTIONAL override. Null / empty falls back to
+	# the weapon-aware BountyFeed opener so we do not regress Dock Breach copy.
+	var opening_override: Variant = MissionDescriptor.field(_current_mission_key, "opening_message", null)
+	if opening_override != null and String(opening_override) != "":
+		_set_message(String(opening_override))
+	# Dock Breach keeps the existing BountyFeed opener set inside _reset_run.
 
 
 func _reset_run() -> void:
 	var descriptor: Dictionary = MissionDescriptor.get_descriptor(_current_mission_key)
+	var flow: String = String(descriptor.get("flow", MissionDescriptor.FLOW_FULL))
 	var starting_region: String = String(descriptor.get("starting_region", REGION_HIVE))
 	var spawn_override: Variant = descriptor.get("spawn_override", null)
 	var spawn_point: Vector2 = spawn_override if spawn_override is Vector2 else _get_spawn_point()
+	_run_spawn_point = spawn_point
 	_state = "boot"
 	_run_time = 0.0
 	_transfer_timer = 0.0
@@ -1253,7 +1278,7 @@ func _reset_run() -> void:
 	_flow_reward_tier = 0
 	_threats_cleared = 0
 	_total_threats = 0
-	_route_phase = PHASE_MOUNTAIN if starting_region == REGION_SKYLINE else PHASE_SHAFT
+	_route_phase = PHASE_MOUNTAIN if flow == MissionDescriptor.FLOW_SKYLINE_ONLY else PHASE_SHAFT
 	_active_region_id = starting_region
 	_active_boss_region_id = ""
 	_initialize_region_states()
@@ -1283,11 +1308,14 @@ func _reset_run() -> void:
 		return
 
 	_state = STATE_PLAYING
-	# 0.3 Skyline Shift — mission dispatch routes geometry by descriptor.
-	if starting_region == REGION_SKYLINE:
+	# 0.3 Skyline Shift — mission dispatch routes geometry by descriptor flow.
+	if flow == MissionDescriptor.FLOW_SKYLINE_ONLY:
 		_build_mountain_slice()
 		_spawn_mountain_hazards()
 		_spawn_region_anchors(REGION_SKYLINE)
+		# Skyline-only runs mean the skyline is unlocked-and-active from boot,
+		# not gated behind a Hive clearance.
+		_set_region_state(REGION_SKYLINE, REGION_STATE_ACTIVE)
 	else:
 		_build_tower()
 		_spawn_hazards()
@@ -2330,7 +2358,10 @@ func _update_hud() -> void:
 			stats_label.text = "CHAIN x%02d   CORE ACTIVE" % _combo
 	elif _route_phase == PHASE_REWARD:
 		var upgrade_level := int(_player.call("get_weapon_upgrade_level", _starter_weapon)) if is_instance_valid(_player) else 0
-		objective_label.text = "HIVE SHAFT // cleansed"
+		# 0.3 Skyline Shift — region name comes from the mission descriptor so
+		# Skyline / Foundry / future clears do not all read "HIVE SHAFT".
+		var cleansed_region: String = String(MissionDescriptor.field(_current_mission_key, "display_name", "HIVE SHAFT")).to_upper()
+		objective_label.text = "%s // cleansed" % cleansed_region
 		stats_label.text = "CHAIN x%02d   %s +%d" % [_combo, _get_weapon_display_name_for(_starter_weapon), max(1, upgrade_level)]
 	elif _route_phase == PHASE_CAVE:
 		objective_label.text = "BROOD CHAMBER // apex ahead"
@@ -2772,7 +2803,11 @@ func _on_player_died() -> void:
 func _get_current_altitude_meters() -> int:
 	if not is_instance_valid(_player):
 		return 0
-	return maxi(0, int(round((_get_spawn_point().y - _player.global_position.y) / PIXELS_PER_METER)))
+	# Altitude is measured relative to wherever the current mission actually
+	# dropped the player, not the static intro marker — Skyline-Shift would
+	# otherwise report a huge positive offset on boot.
+	var origin_y: float = _run_spawn_point.y if _run_spawn_point != Vector2.ZERO else _get_spawn_point().y
+	return maxi(0, int(round((origin_y - _player.global_position.y) / PIXELS_PER_METER)))
 
 
 func _get_cave_distance_meters() -> int:

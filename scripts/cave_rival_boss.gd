@@ -98,18 +98,53 @@ func take_hit(amount: int, hit_position: Vector2, hit_kind: String = "gun") -> b
 		return false
 
 	var damage := amount + (2 if hit_kind == "blade" else 0)
+	var previous_health := _health
 	_health = maxi(0, _health - damage)
 	_flash_timer = 0.18
 	_velocity.x += signf(global_position.x - hit_position.x) * (72.0 if hit_kind == "blade" else 34.0)
 	_velocity.y = minf(_velocity.y, -110.0 if hit_kind == "blade" else -52.0)
 	emit_signal("health_changed", _health, max_health)
 	queue_redraw()
+	_feel_on_boss_hit(previous_health, _health)
 
 	if _health <= 0:
 		_enter_defeated_state()
 		return true
 
 	return true
+
+
+# 0.2 Hive Signal — boss phase feel. Phase breakpoints at 66% and 33% of max health
+# trigger the louder treatment. Ordinary hits get a softer layer.
+func _feel_on_boss_hit(prev_hp: int, new_hp: int) -> void:
+	var tree := get_tree()
+	if tree == null or tree.root == null:
+		return
+	var sb := tree.root.get_node_or_null("SoundBank")
+	var cs := tree.root.get_node_or_null("CameraShake")
+	var hs := tree.root.get_node_or_null("HitStop")
+	var me := tree.root.get_node_or_null("MusicEngine")
+	if sb != null:
+		sb.call("play", "blade_hit")
+	if cs != null:
+		cs.call("kick", 3.5, 0.08)
+	if me != null:
+		# Always keep the fight hot — boss intensity scales down as the boss dies.
+		var base := 0.5 + (1.0 - float(new_hp) / float(maxi(max_health, 1))) * 0.4
+		me.call("set_intensity", clampf(base, 0.0, 1.0))
+
+	var thresholds := [int(max_health * 0.66), int(max_health * 0.33)]
+	for breakpoint in thresholds:
+		if prev_hp > breakpoint and new_hp <= breakpoint:
+			if sb != null:
+				sb.call("play", "rival_phase_change")
+			if cs != null:
+				cs.call("kick", 9.0, 0.25)
+			if hs != null:
+				hs.call("freeze_frames", 6)
+			if me != null:
+				me.call("bump_intensity", 0.3, 3.0)
+			break
 
 
 func _process(delta: float) -> void:

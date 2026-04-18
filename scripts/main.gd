@@ -1212,13 +1212,38 @@ func _commit_starter_choice(mode: String) -> void:
 	_begin_playable_slice()
 
 
+## Mission dispatch — 0.3 Skyline Shift sprint-1. Tracks which mission the
+## current run was started with so _reset_run() can route geometry, spawn
+## point, and backdrop per-descriptor instead of hardcoding Dock Breach.
+const MissionDescriptor = preload("res://scripts/mission_descriptor.gd")
+var _current_mission_key: String = MissionDescriptor.KEY_DOCK_BREACH
+
+
+## Public entry — call this before _begin_playable_slice to pick a mission.
+## Unknown keys silently fall back to the default mission (dock_breach).
+func set_current_mission(mission_key: String) -> void:
+	if MissionDescriptor.exists(mission_key):
+		_current_mission_key = mission_key
+	else:
+		push_warning("[main] Unknown mission key '%s', defaulting to '%s'" % [mission_key, MissionDescriptor.default_key()])
+		_current_mission_key = MissionDescriptor.default_key()
+
+
+func get_current_mission() -> String:
+	return _current_mission_key
+
+
 func _begin_playable_slice() -> void:
 	_reset_run()
-	_set_message("Sanctuary drop confirmed. Burn the Hive Shaft anchors and expose the Brood Warden.")
+	var opening: String = String(MissionDescriptor.field(_current_mission_key, "opening_message", "Sanctuary drop confirmed. Burn the Hive Shaft anchors and expose the Brood Warden."))
+	_set_message(opening)
 
 
 func _reset_run() -> void:
-	var spawn_point := _get_spawn_point()
+	var descriptor: Dictionary = MissionDescriptor.get_descriptor(_current_mission_key)
+	var starting_region: String = String(descriptor.get("starting_region", REGION_HIVE))
+	var spawn_override: Variant = descriptor.get("spawn_override", null)
+	var spawn_point: Vector2 = spawn_override if spawn_override is Vector2 else _get_spawn_point()
 	_state = "boot"
 	_run_time = 0.0
 	_transfer_timer = 0.0
@@ -1228,8 +1253,8 @@ func _reset_run() -> void:
 	_flow_reward_tier = 0
 	_threats_cleared = 0
 	_total_threats = 0
-	_route_phase = PHASE_SHAFT
-	_active_region_id = REGION_HIVE
+	_route_phase = PHASE_MOUNTAIN if starting_region == REGION_SKYLINE else PHASE_SHAFT
+	_active_region_id = starting_region
 	_active_boss_region_id = ""
 	_initialize_region_states()
 	_kill_floor_active = true
@@ -1258,9 +1283,15 @@ func _reset_run() -> void:
 		return
 
 	_state = STATE_PLAYING
-	_build_tower()
-	_spawn_hazards()
-	_spawn_region_anchors(REGION_HIVE)
+	# 0.3 Skyline Shift — mission dispatch routes geometry by descriptor.
+	if starting_region == REGION_SKYLINE:
+		_build_mountain_slice()
+		_spawn_mountain_hazards()
+		_spawn_region_anchors(REGION_SKYLINE)
+	else:
+		_build_tower()
+		_spawn_hazards()
+		_spawn_region_anchors(REGION_HIVE)
 
 	_player.set_physics_process(true)
 	_player.visible = true
@@ -1279,7 +1310,13 @@ func _reset_run() -> void:
 	_set_kill_floor_visible(true)
 	_ensure_transfer_line()
 	_transfer_line.visible = false
-	backdrop.call("set_region_mode", BACKDROP_HIVE_SHAFT)
+	var backdrop_mode: int = int(descriptor.get("backdrop_mode", BACKDROP_HIVE_SHAFT))
+	backdrop.call("set_region_mode", backdrop_mode)
+	# 0.2 Hive Signal — swap music track to match the mission's region.
+	var music_track: String = String(descriptor.get("music_track", "dock_breach"))
+	var music_engine: Node = get_node_or_null("/root/MusicEngine")
+	if music_engine != null:
+		music_engine.call("set_track", music_track)
 	_set_boss_ui_visible(false)
 	_set_duel_dialogue_visible(false)
 	_hide_receipt()

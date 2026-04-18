@@ -14,6 +14,7 @@ const TESTS := [
 	"res://tests/test_music_engine.gd",
 	"res://tests/test_wiring.gd",
 	"res://tests/test_juice_integration.gd",
+	"res://tests/test_mission_descriptor.gd",
 ]
 
 

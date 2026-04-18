@@ -18,11 +18,13 @@ func run() -> Dictionary:
 	a.near(Engine.time_scale, 0.0, 0.001, "engine time scale = 0 during freeze")
 	a.near(hs.time_remaining(), hs.DEFAULT_DURATION, 0.001, "default duration")
 
-	# Simulate the timer expiring.
-	hs._elapsed = hs._duration + 0.01
+	# Simulate the timer expiring by backdating the wallclock start anchor.
+	# HitStop now countdowns via Time.get_ticks_usec() so the test must touch
+	# the anchor, not the elapsed field that _process overwrites.
+	hs._freeze_start_usec = Time.get_ticks_usec() - int((hs._duration + 0.01) * 1_000_000)
 	hs._process(0.0)
 	a.false_(hs.is_active(), "inactive after timer expires")
-	a.near(Engine.time_scale, previous_scale, 0.001, "time scale restored")
+	a.near(float(Engine.time_scale), float(previous_scale), 0.001, "time scale restored")
 
 	# freeze_frames — 6 frames at 60Hz = 0.1s.
 	hs.freeze_frames(6)

@@ -24,16 +24,20 @@ func run() -> Dictionary:
 	me.set_intensity(5.0)
 	a.near(float(me._target), 1.0, 0.001, "intensity ceiling")
 
-	# Stem threshold gating: below threshold is hard silent (-80 dB);
-	# above threshold rises into the audible band between -24 and -6 dB.
-	a.near(float(me._stem_db_for("ambient", 0.0)), -80.0, 0.001, "ambient silent at exact threshold")
-	a.gt(float(me._stem_db_for("ambient", 0.1)), -24.0, "ambient audible above threshold")
+	# Stem doctrine:
+	#   ambient is always present — audible floor at intensity 0, full at combat
+	#   other stems hard-silent below threshold, then snap to -6 dB
+	a.gt(float(me._stem_db_for("ambient", 0.0)), -24.0, "ambient always audible at idle")
+	a.near(float(me._stem_db_for("ambient", 1.0)), -6.0, 0.01, "ambient at full during combat")
+
 	a.near(float(me._stem_db_for("bass", 0.15)), -80.0, 0.001, "bass silent below threshold")
-	a.gt(float(me._stem_db_for("bass", 0.35)), -24.0, "bass audible above threshold")
+	a.near(float(me._stem_db_for("bass", 0.35)), -6.0, 0.01, "bass snaps to -6 dB above threshold")
+
+	a.near(float(me._stem_db_for("drums", 0.3)), -80.0, 0.001, "drums silent below threshold")
+	a.near(float(me._stem_db_for("drums", 0.5)), -6.0, 0.01, "drums snap to -6 dB above threshold")
+
 	a.near(float(me._stem_db_for("chaos", 0.5)), -80.0, 0.001, "chaos silent in normal combat")
-	a.gt(float(me._stem_db_for("chaos", 0.95)), -24.0, "chaos audible at high intensity")
-	# Top of ramp hits -6 dB (our design ceiling).
-	a.near(float(me._stem_db_for("bass", 0.5)), -6.0, 0.01, "bass top of ramp = -6 dB")
+	a.near(float(me._stem_db_for("chaos", 0.95)), -6.0, 0.01, "chaos at -6 dB at high intensity")
 
 	# bump_intensity accumulates onto the target.
 	me.set_intensity(0.3)

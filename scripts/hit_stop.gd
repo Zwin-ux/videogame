@@ -22,6 +22,7 @@ var _duration := 0.0
 var _previous_scale := 1.0
 var _freeze_scale := 0.0
 var _disabled := false
+var _freeze_start_usec := 0
 
 
 func _ready() -> void:
@@ -32,10 +33,11 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not _active:
 		return
-	# Use real-world delta (not the scaled engine delta) so we can count down
-	# while the rest of the game is paused.
-	var real_delta := _real_delta()
-	_elapsed += real_delta
+	# Wallclock-based countdown so hit-stop always ends on time, regardless of
+	# current Engine.time_scale. Time.get_ticks_usec() keeps counting at full
+	# speed even while the world is frozen.
+	var now_usec: int = Time.get_ticks_usec()
+	_elapsed = float(now_usec - _freeze_start_usec) / 1_000_000.0
 	if _elapsed >= _duration:
 		_restore()
 
@@ -87,35 +89,38 @@ func _begin(duration: float, scale: float) -> void:
 	if duration <= 0.0:
 		return
 	if _active:
-		# Accept the stronger freeze. Longer duration wins.
+		# Accept the stronger freeze. Longer duration wins, but we keep the
+		# original _previous_scale — if another system set time_scale while we
+		# were frozen, restoring our captured 1.0 would smash their work.
 		if duration > (_duration - _elapsed):
 			_duration = duration
 			_elapsed = 0.0
 			_freeze_scale = scale
+			_freeze_start_usec = Time.get_ticks_usec()
 			Engine.time_scale = _freeze_scale
 		return
 	_previous_scale = Engine.time_scale
 	_freeze_scale = scale
 	_duration = duration
 	_elapsed = 0.0
+	_freeze_start_usec = Time.get_ticks_usec()
 	_active = true
 	Engine.time_scale = _freeze_scale
 	emit_signal("frozen", duration)
 
 
 func _restore() -> void:
-	Engine.time_scale = _previous_scale
+	# Only restore if we still own time_scale. If another system changed it
+	# during our freeze, it has newer authority — don't clobber.
+	if is_equal_approx(Engine.time_scale, _freeze_scale):
+		Engine.time_scale = _previous_scale
 	_active = false
 	_duration = 0.0
 	_elapsed = 0.0
 	emit_signal("restored")
 
 
-func _real_delta() -> float:
-	# `Engine.time_scale` modifies `get_process_delta_time()`. To count real
-	# seconds, use the physics ticks-per-second basis.
-	var ts := Engine.time_scale
-	if ts <= 0.0001:
-		# Approximate real time from the project's physics fps setting.
-		return 1.0 / float(Engine.physics_ticks_per_second)
-	return get_process_delta_time() / ts
+func _exit_tree() -> void:
+	# Safety: never leak a frozen time_scale across scene teardown.
+	if _active:
+		_restore()

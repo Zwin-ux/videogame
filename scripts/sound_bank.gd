@@ -20,21 +20,24 @@ const POOL_SIZE := 12
 #   tone_blip   — sine-triangle tonal blip, for UI and pickups
 #   slash_swipe — descending pitched sweep with grain, blade signature
 #   thump       — low-freq kick, impact / damage
+## Every duration <= 0.20 s. Arcade-cabinet doctrine: feedback must be sharp,
+## not cinematic. The boss phase-change SFX is the one allowed outlier at the
+## ceiling because it IS the phase beat, not an aftershock.
 const MANIFEST := {
-	"gun_fire":         {"kind": "noise_burst", "duration": 0.12, "freq": 340.0, "decay": 28.0, "color": 0.7, "volume_db": -6.0},
-	"gun_fire_pressure":{"kind": "noise_burst", "duration": 0.14, "freq": 260.0, "decay": 22.0, "color": 0.85, "volume_db": -4.0},
-	"gun_fire_breaker": {"kind": "noise_burst", "duration": 0.18, "freq": 190.0, "decay": 18.0, "color": 0.95, "volume_db": -3.0},
-	"gun_hit":          {"kind": "thump",       "duration": 0.10, "freq": 180.0, "decay": 36.0, "volume_db": -5.0},
-	"blade_swing":      {"kind": "slash_swipe", "duration": 0.18, "freq_start": 820.0, "freq_end": 380.0, "decay": 20.0, "volume_db": -7.0},
-	"blade_hit":        {"kind": "thump",       "duration": 0.14, "freq": 140.0, "decay": 28.0, "volume_db": -4.0},
-	"blade_hit_kill":   {"kind": "thump",       "duration": 0.22, "freq": 90.0,  "decay": 16.0, "volume_db": -2.0},
-	"enemy_death":      {"kind": "noise_burst", "duration": 0.26, "freq": 220.0, "decay": 14.0, "color": 0.6, "volume_db": -4.0},
-	"player_hit":       {"kind": "thump",       "duration": 0.30, "freq": 70.0,  "decay": 10.0, "volume_db": -1.0},
-	"pickup":           {"kind": "tone_blip",   "duration": 0.22, "freq": 880.0, "decay": 16.0, "volume_db": -8.0},
-	"pickup_major":     {"kind": "tone_blip",   "duration": 0.34, "freq": 1320.0,"decay": 12.0, "volume_db": -6.0},
-	"upgrade_stinger":  {"kind": "tone_blip",   "duration": 0.48, "freq": 1760.0,"decay": 9.0,  "volume_db": -4.0},
-	"rival_phase_change":{"kind": "thump",      "duration": 0.54, "freq": 55.0,  "decay": 6.0,  "volume_db": 0.0},
-	"combo_milestone":  {"kind": "tone_blip",   "duration": 0.28, "freq": 660.0, "decay": 14.0, "volume_db": -6.0},
+	"gun_fire":         {"kind": "noise_burst", "duration": 0.10, "freq": 340.0, "decay": 34.0, "color": 0.7,  "volume_db": -6.0},
+	"gun_fire_pressure":{"kind": "noise_burst", "duration": 0.11, "freq": 260.0, "decay": 28.0, "color": 0.85, "volume_db": -4.0},
+	"gun_fire_breaker": {"kind": "noise_burst", "duration": 0.13, "freq": 190.0, "decay": 22.0, "color": 0.95, "volume_db": -3.0},
+	"gun_hit":          {"kind": "thump",       "duration": 0.08, "freq": 180.0, "decay": 44.0, "volume_db": -5.0},
+	"blade_swing":      {"kind": "slash_swipe", "duration": 0.14, "freq_start": 820.0, "freq_end": 380.0, "decay": 26.0, "volume_db": -7.0},
+	"blade_hit":        {"kind": "thump",       "duration": 0.10, "freq": 140.0, "decay": 36.0, "volume_db": -4.0},
+	"blade_hit_kill":   {"kind": "thump",       "duration": 0.16, "freq": 90.0,  "decay": 22.0, "volume_db": -2.0},
+	"enemy_death":      {"kind": "noise_burst", "duration": 0.14, "freq": 220.0, "decay": 22.0, "color": 0.6,  "volume_db": -4.0},
+	"player_hit":       {"kind": "thump",       "duration": 0.14, "freq": 70.0,  "decay": 22.0, "volume_db": -1.0},
+	"pickup":           {"kind": "tone_blip",   "duration": 0.10, "freq": 880.0, "decay": 30.0, "volume_db": -8.0},
+	"pickup_major":     {"kind": "tone_blip",   "duration": 0.14, "freq": 1320.0,"decay": 24.0, "volume_db": -6.0},
+	"upgrade_stinger":  {"kind": "tone_blip",   "duration": 0.18, "freq": 1760.0,"decay": 18.0, "volume_db": -4.0},
+	"rival_phase_change":{"kind": "thump",      "duration": 0.20, "freq": 55.0,  "decay": 16.0, "volume_db": 0.0},
+	"combo_milestone":  {"kind": "tone_blip",   "duration": 0.12, "freq": 660.0, "decay": 26.0, "volume_db": -6.0},
 }
 
 var _streams: Dictionary = {}          # name -> AudioStream
@@ -51,21 +54,25 @@ func _ready() -> void:
 
 
 ## Play a sound by manifest name. Returns true if audible, false if unknown or muted.
-func play(name: String, opts: Dictionary = {}) -> bool:
+func play(sound_name: String, opts: Dictionary = {}) -> bool:
 	if _muted:
 		return false
 	# Lazy self-heal if play() is called before _ready / _enter_tree finished.
 	if _pool.is_empty():
 		_ensure_pool()
-	var stream: AudioStream = _get_stream(name)
+	var stream: AudioStream = _get_stream(sound_name)
 	if stream == null:
-		push_warning("[SoundBank] Unknown sound: %s" % name)
+		push_warning("[SoundBank] Unknown sound: %s" % sound_name)
 		return false
 	var player: AudioStreamPlayer = _next_player()
 	if player == null:
 		return false
+	# Stop any existing playback before re-using the voice — avoids a click
+	# artifact when voice-stealing under heavy combat.
+	if player.playing:
+		player.stop()
 	player.stream = stream
-	player.volume_db = float(opts.get("volume_db", _manifest_volume(name)))
+	player.volume_db = float(opts.get("volume_db", _manifest_volume(sound_name)))
 	player.pitch_scale = float(opts.get("pitch", 1.0))
 	player.bus = BUS_NAME
 	# Guard: headless / standalone-instantiated SoundBank is not in the tree.
@@ -76,9 +83,9 @@ func play(name: String, opts: Dictionary = {}) -> bool:
 	return true
 
 
-## Hot-swap in an authored stream. Future `play(name)` calls use this stream.
-func register(name: String, stream: AudioStream) -> void:
-	_streams[name] = stream
+## Hot-swap in an authored stream. Future `play(sound_name)` calls use this stream.
+func register(sound_name: String, stream: AudioStream) -> void:
+	_streams[sound_name] = stream
 
 
 ## Drop all registered streams back to the procedural defaults.
@@ -96,8 +103,8 @@ func is_muted() -> bool:
 
 
 ## Testing / debug. Returns the raw configuration for a sound name.
-func describe(name: String) -> Dictionary:
-	return MANIFEST.get(name, {})
+func describe(sound_name: String) -> Dictionary:
+	return MANIFEST.get(sound_name, {})
 
 
 func known_sounds() -> PackedStringArray:
@@ -111,8 +118,8 @@ func known_sounds() -> PackedStringArray:
 
 # --- internal ---------------------------------------------------------------
 
-func _manifest_volume(name: String) -> float:
-	var cfg := MANIFEST.get(name, {}) as Dictionary
+func _manifest_volume(sound_name: String) -> float:
+	var cfg: Dictionary = MANIFEST.get(sound_name, {}) as Dictionary
 	return float(cfg.get("volume_db", -6.0))
 
 
@@ -137,35 +144,35 @@ func _next_player() -> AudioStreamPlayer:
 	return _pool[idx]
 
 
-func _get_stream(name: String) -> AudioStream:
-	if _streams.has(name):
-		return _streams[name]
+func _get_stream(sound_name: String) -> AudioStream:
+	if _streams.has(sound_name):
+		return _streams[sound_name]
 	# Authored .ogg wins over procedural — load on first miss.
-	var path: String = AUDIO_DIR + name + ".ogg"
+	var path: String = AUDIO_DIR + sound_name + ".ogg"
 	if ResourceLoader.exists(path):
 		var authored: Resource = ResourceLoader.load(path)
 		if authored is AudioStream:
-			_streams[name] = authored
+			_streams[sound_name] = authored
 			return authored
 	# Fall back to procedural synthesis for the single requested name.
-	if MANIFEST.has(name):
-		var cfg: Dictionary = MANIFEST[name]
+	if MANIFEST.has(sound_name):
+		var cfg: Dictionary = MANIFEST[sound_name]
 		var stream: AudioStream = _synthesize(cfg)
 		if stream != null:
-			_streams[name] = stream
+			_streams[sound_name] = stream
 			return stream
 	return null
 
 
 ## Optional: eager-bake all SFX (only useful for tests or load-screen warm-up).
 func _prebake_streams() -> void:
-	for name in MANIFEST.keys():
-		if _streams.has(name):
+	for sound_name in MANIFEST.keys():
+		if _streams.has(sound_name):
 			continue
-		var cfg: Dictionary = MANIFEST[name]
+		var cfg: Dictionary = MANIFEST[sound_name]
 		var stream: AudioStream = _synthesize(cfg)
 		if stream != null:
-			_streams[name] = stream
+			_streams[sound_name] = stream
 
 
 func _synthesize(cfg: Dictionary) -> AudioStream:

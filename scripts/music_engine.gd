@@ -75,18 +75,18 @@ func bump_intensity(amount: float, decay_seconds: float = 2.0) -> void:
 
 
 ## Swap track (reloads stems).
-func set_track(name: String) -> void:
-	if _track == name:
+func set_track(track_name: String) -> void:
+	if _track == track_name:
 		return
-	_track = name
-	_load_stems(name)
-	emit_signal("track_changed", name)
+	_track = track_name
+	_load_stems(track_name)
+	emit_signal("track_changed", track_name)
 
 
 func set_muted(flag: bool) -> void:
 	_muted = flag
 	for p in _players.values():
-		p.stream_paused = flag
+		(p as AudioStreamPlayer).stream_paused = flag
 
 
 ## Testing / debug.
@@ -94,10 +94,10 @@ func get_intensity() -> float:
 	return _intensity
 
 
-func get_stem_volume(name: String) -> float:
-	if not _players.has(name):
+func get_stem_volume(stem_name: String) -> float:
+	if not _players.has(stem_name):
 		return -80.0
-	return (_players[name] as AudioStreamPlayer).volume_db
+	return (_players[stem_name] as AudioStreamPlayer).volume_db
 
 
 # --- internal ---------------------------------------------------------------
@@ -113,10 +113,10 @@ func _ensure_players() -> void:
 		_players[stem] = p
 
 
-func _load_stems(track: String) -> void:
+func _load_stems(track_name: String) -> void:
 	for stem in STEMS:
 		var player: AudioStreamPlayer = _players[stem]
-		var authored_path: String = "%s%s_%s.ogg" % [AUDIO_DIR, track, stem]
+		var authored_path: String = "%s%s_%s.ogg" % [AUDIO_DIR, track_name, stem]
 		var stream: AudioStream = null
 		if ResourceLoader.exists(authored_path):
 			var loaded: Resource = ResourceLoader.load(authored_path)
@@ -141,23 +141,34 @@ func _apply_mix() -> void:
 		player.volume_db = target_db
 
 
+## Arcade-cabinet doctrine — stems SNAP on, they don't fade. A tiny 60 ms
+## linear ramp kills the click artifact but keeps the punch-in feel.
+const _SNAP_RAMP_WIDTH := 0.02
+
+
 func _stem_db_for(stem: String, intensity: float) -> float:
-	var threshold: float = THRESHOLDS.get(stem, 0.0)
-	# Linear ramp across FADE_RANGE from silent at threshold to 0 dB at threshold+fade.
+	var threshold: float = float(THRESHOLDS.get(stem, 0.0))
+	if stem == "ambient":
+		# Ambient is the bed of the track — always present, faint at low
+		# intensity, full during combat.
+		var bed_ramp: float = clampf(intensity / 0.3, 0.0, 1.0)
+		return lerpf(-18.0, -6.0, bed_ramp)
 	if intensity <= threshold:
 		return -80.0
-	var ramp := clampf((intensity - threshold) / FADE_RANGE, 0.0, 1.0)
-	# Gentle curve so stems do not pop in.
-	var gain := ramp * ramp
-	return lerp(-24.0, -6.0, gain)
+	# Step function with a micro linear ramp to avoid a click.
+	var over: float = intensity - threshold
+	if over >= _SNAP_RAMP_WIDTH:
+		return -6.0
+	var ramp: float = clampf(over / _SNAP_RAMP_WIDTH, 0.0, 1.0)
+	return lerpf(-80.0, -6.0, ramp)
 
 
 const _SAMPLE_RATE := 11025
 const _LOOP_SECONDS := 2.0
 
 
-func _synthesize_stem(stem: String) -> AudioStreamWAV:
-	match stem:
+func _synthesize_stem(stem_name: String) -> AudioStreamWAV:
+	match stem_name:
 		"ambient": return _bake_ambient()
 		"bass":    return _bake_bass()
 		"drums":   return _bake_drums()
@@ -242,19 +253,20 @@ func _bake_drums() -> AudioStreamWAV:
 
 
 func _bake_lead() -> AudioStreamWAV:
-	# Arpeggio riff, signals active combat.
-	var n := int(_LOOP_SECONDS * _SAMPLE_RATE)
+	# Arpeggio riff, signals active combat. Phase reset per-note so note
+	# boundaries don't click (uses note_t, not absolute t).
+	var n: int = int(_LOOP_SECONDS * _SAMPLE_RATE)
 	var data := PackedByteArray()
 	data.resize(n * 2)
-	var notes := [220.0, 261.63, 329.63, 261.63, 220.0, 329.63, 392.0, 329.63]
-	var note_length := _LOOP_SECONDS / float(notes.size())
+	var notes: Array = [220.0, 261.63, 329.63, 261.63, 220.0, 329.63, 392.0, 329.63]
+	var note_length: float = _LOOP_SECONDS / float(notes.size())
 	for i in range(n):
-		var t := float(i) / float(_SAMPLE_RATE)
-		var idx := int(floor(t / note_length)) % notes.size()
-		var note_t := fmod(t, note_length)
-		var freq := notes[idx] as float
-		var env := exp(-note_t * 4.0) * (1.0 - note_t / note_length) * 0.7
-		var wave := sin(TAU * freq * t) * 0.55
+		var t: float = float(i) / float(_SAMPLE_RATE)
+		var idx: int = int(floor(t / note_length)) % notes.size()
+		var note_t: float = fmod(t, note_length)
+		var freq: float = float(notes[idx])
+		var env: float = exp(-note_t * 4.0) * (1.0 - note_t / note_length) * 0.7
+		var wave: float = sin(TAU * freq * note_t) * 0.55
 		var sample_f: float = wave * env
 		var sample: int = clampi(int(sample_f * 21000.0), -32767, 32767)
 		data.encode_s16(i * 2, sample)

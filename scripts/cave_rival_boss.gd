@@ -128,10 +128,8 @@ func _feel_on_boss_hit(prev_hp: int, new_hp: int) -> void:
 		sb.call("play", "blade_hit")
 	if cs != null:
 		cs.call("kick", 3.5, 0.08)
-	if me != null:
-		# Always keep the fight hot — boss intensity scales down as the boss dies.
-		var base := 0.5 + (1.0 - float(new_hp) / float(maxi(max_health, 1))) * 0.4
-		me.call("set_intensity", clampf(base, 0.0, 1.0))
+	# Per-hit intensity tracking was "health bar drives mood" — modern-pattern,
+	# not arcade. Intensity now steps at phase gates only; see below.
 
 	var phase_thresholds: Array = [int(max_health * 0.66), int(max_health * 0.33)]
 	for threshold in phase_thresholds:

@@ -14,7 +14,7 @@ extends Node
 ## further than that, no matter what callers pass.
 
 const MAX_AMPLITUDE := 9.0
-const MAX_DURATION := 0.40
+const MAX_DURATION := 0.25
 
 ## Amplitude presets for readable call sites.
 const PRESETS := {
@@ -96,10 +96,10 @@ func kick(amplitude: float, duration: float) -> void:
 
 
 ## Named preset. `CameraShake.preset("big")`.
-func preset(name: String) -> void:
-	var p: Dictionary = PRESETS.get(name, {})
+func preset(preset_name: String) -> void:
+	var p: Dictionary = PRESETS.get(preset_name, {})
 	if p.is_empty():
-		push_warning("[CameraShake] Unknown preset: %s" % name)
+		push_warning("[CameraShake] Unknown preset: %s" % preset_name)
 		return
 	kick(float(p.get("amp", 0.0)), float(p.get("dur", 0.0)))
 

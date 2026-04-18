@@ -2289,7 +2289,10 @@ func _apply_run_camera(delta: float) -> void:
 
 
 func _get_altitude_meters() -> int:
-	return maxi(0, int(round((_get_spawn_point().y - _highest_player_y) / PIXELS_PER_METER)))
+	# 0.3 Skyline Shift — use the live run spawn, not the intro marker, so
+	# the best-altitude record tracks from the actual mission drop.
+	var origin_y: float = _run_spawn_point.y if _run_spawn_point != Vector2.ZERO else _get_spawn_point().y
+	return maxi(0, int(round((origin_y - _highest_player_y) / PIXELS_PER_METER)))
 
 
 func _get_shaft_sector_name() -> String:

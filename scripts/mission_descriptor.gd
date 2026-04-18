@@ -17,6 +17,7 @@ extends RefCounted
 
 const KEY_DOCK_BREACH := "dock_breach"
 const KEY_SKYLINE_SHIFT := "skyline_shift"
+const KEY_ROOFTOP_RUSH := "rooftop_rush"
 
 const REGION_HIVE := "hive_shaft"
 const REGION_SKYLINE := "sunset_ruin_skyline"
@@ -35,12 +36,14 @@ const FLOW_SKYLINE_ONLY := "skyline_only"
 
 ## Static registry. Fields match the subset of main.gd behaviour we need to
 ## parametrise.
-##   starting_region — REGION_* string, drives geometry + anchors
-##   backdrop_mode   — BACKDROP_* enum; main.gd reads it directly
-##   spawn_override  — Vector2 or null; null means "use main.gd default"
-##   opening_message — null means "fall back to BountyFeed weapon-aware copy"
-##   flow            — controls the run structure (see FLOW_* constants)
-##   music_track     — picked up by MusicEngine.set_track() on run start
+##   starting_region       — REGION_* string, drives geometry + anchors
+##   backdrop_mode         — BACKDROP_* enum; main.gd reads it directly
+##   spawn_override        — Vector2 or null; null means "use main.gd default"
+##   opening_message       — null means "fall back to BountyFeed opener"
+##   flow                  — run structure (see FLOW_* constants)
+##   music_track           — MusicEngine.set_track() key on run start
+##   target_time_seconds   — null for no timer; float for Rush remixes.
+##                           HUD shows a countdown instead of altitude when set.
 const MISSIONS := {
 	KEY_DOCK_BREACH: {
 		"key": KEY_DOCK_BREACH,
@@ -51,6 +54,7 @@ const MISSIONS := {
 		"opening_message": null,     # keep BountyFeed weapon-aware opener
 		"flow": FLOW_FULL,
 		"music_track": "dock_breach",
+		"target_time_seconds": null,
 	},
 	KEY_SKYLINE_SHIFT: {
 		"key": KEY_SKYLINE_SHIFT,
@@ -61,6 +65,19 @@ const MISSIONS := {
 		"opening_message": "Lift crest confirmed. Skyline's own hunters don't care that the hive is dying.",
 		"flow": FLOW_SKYLINE_ONLY,
 		"music_track": "skyline",
+		"target_time_seconds": null,
+	},
+	KEY_ROOFTOP_RUSH: {
+		"key": KEY_ROOFTOP_RUSH,
+		"display_name": "Rooftop Rush",
+		"starting_region": REGION_SKYLINE,
+		"backdrop_mode": BACKDROP_SUNSET_RUIN,
+		"spawn_override": Vector2(1002.0, 500.0),
+		"opening_message": "Rush mode. Clock's on, Matriarch's in. Cut the skyline inside the window.",
+		"flow": FLOW_SKYLINE_ONLY,
+		"music_track": "skyline",
+		# 120s tight-timer remix of Skyline Shift. Same geometry, Rush pressure.
+		"target_time_seconds": 120.0,
 	},
 }
 
@@ -81,7 +98,21 @@ static func known_keys() -> PackedStringArray:
 	var out := PackedStringArray()
 	out.append(KEY_DOCK_BREACH)
 	out.append(KEY_SKYLINE_SHIFT)
+	out.append(KEY_ROOFTOP_RUSH)
 	return out
+
+
+## Convenience: missions with a Rush-style deadline return > 0; others 0.
+static func target_time_for(key: String) -> float:
+	var v: Variant = field(key, "target_time_seconds", null)
+	if v is float:
+		return float(v)
+	return 0.0
+
+
+## True iff the mission enforces a Rush-style time limit.
+static func is_rush(key: String) -> bool:
+	return target_time_for(key) > 0.0
 
 
 ## Resolve a descriptor and field, with fallback. Lets main.gd stay compact:

@@ -2346,7 +2346,16 @@ func _hive_signal_celebrate_combo(previous: int, current: int) -> void:
 
 
 func _update_hud() -> void:
-	timer_label.text = "%03dm" % _get_current_altitude_meters()
+	# 0.3 Skyline Shift — Rush missions swap altitude readout for a
+	# countdown. No timer set = altitude meters as before.
+	var rush_target: float = MissionDescriptor.target_time_for(_current_mission_key)
+	if rush_target > 0.0:
+		var remaining: float = maxf(rush_target - _run_time, 0.0)
+		var mins: int = int(remaining / 60.0)
+		var secs: int = int(remaining) % 60
+		timer_label.text = "%01d:%02d" % [mins, secs]
+	else:
+		timer_label.text = "%03dm" % _get_current_altitude_meters()
 	if _state == STATE_TRANSFER:
 		objective_label.text = "TRANSFER // brood breach" if _transfer_kind == TRANSFER_KIND_CAVE else "TRANSFER // skyline route"
 		stats_label.text = "CHAIN x%02d   VERIFIED %d/%d" % [_combo, _threats_cleared, _total_threats]

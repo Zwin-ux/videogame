@@ -55,5 +55,13 @@ func run() -> Dictionary:
 	sb.reset_to_procedural()
 	a.ne(sb._get_stream("gun_fire"), swap, "reset reverts stream")
 
+	# play_at (positional) path uses the 2D pool.
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree != null and tree.root != null:
+		tree.root.add_child(sb)
+		a.true_(sb.call("play_at", "blade_hit_kill", Vector2(100, 200)), "play_at returns true")
+		a.eq(int(sb._pool_2d.size()), int(sb.POOL_SIZE_2D), "2D pool sized correctly")
+		tree.root.remove_child(sb)
+
 	sb.free()
 	return a.report()

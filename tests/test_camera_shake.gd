@@ -67,6 +67,31 @@ func run() -> Dictionary:
 	a.eq(cam.offset, Vector2(10.0, 20.0), "unregister restores offset")
 	a.false_(cs.is_active(), "shake cleared on unregister")
 
+	# Tree-driven decay: after duration elapses under _process, offset snaps back.
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree != null and tree.root != null:
+		tree.root.add_child(cs)
+		var cam2: Camera2D = Camera2D.new()
+		cam2.offset = Vector2(50.0, 60.0)
+		tree.root.add_child(cam2)
+		cs.register_camera(cam2)
+		cs.kick(6.0, 0.05)
+		# Simulate five frames of 0.02s delta — total 0.10s, past 0.05s duration.
+		for i in range(5):
+			cs._process(0.02)
+		a.false_(cs.is_active(), "process-driven decay completes")
+		a.eq(cam2.offset, Vector2(50.0, 60.0), "offset restored after decay")
+
+		# Additive behaviour: external code tweens offset mid-shake.
+		cs.kick(4.0, 0.1)
+		cs._process(0.01)  # first shake frame installed
+		cam2.offset = cam2.offset + Vector2(20.0, 0.0)  # external tween shove
+		cs._process(0.01)  # next shake frame must not clobber the shove
+		a.gt(float(cam2.offset.x), 65.0, "external tween preserved under shake")
+		cs.unregister_camera(cam2)
+		tree.root.remove_child(cs)
+		cam2.free()
+
 	cam.free()
 	cs.free()
 	return a.report()

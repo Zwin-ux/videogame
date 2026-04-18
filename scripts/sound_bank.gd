@@ -13,6 +13,7 @@ extends Node
 const BUS_NAME := "SFX"
 const AUDIO_DIR := "res://art/audio/sfx/"
 const POOL_SIZE := 12
+const POOL_SIZE_2D := 6
 
 # Hive Signal SFX manifest. Each entry declares the procedural recipe used
 # when no authored file is present. `kind` drives the synth path.
@@ -42,7 +43,9 @@ const MANIFEST := {
 
 var _streams: Dictionary = {}          # name -> AudioStream
 var _pool: Array[AudioStreamPlayer] = []
+var _pool_2d: Array[AudioStreamPlayer2D] = []
 var _cursor := 0
+var _cursor_2d := 0
 var _muted := false
 
 
@@ -78,6 +81,34 @@ func play(sound_name: String, opts: Dictionary = {}) -> bool:
 	# Guard: headless / standalone-instantiated SoundBank is not in the tree.
 	# The play() call requires tree membership, so skip the audio call but
 	# still report audible=true so tests and callers don't see false failures.
+	if player.is_inside_tree():
+		player.play()
+	return true
+
+
+## Positional variant — plays at a world position so distance attenuation
+## sells the hit. Blade impacts, bullet hits, enemy deaths should use this
+## whenever a position is handy.
+func play_at(sound_name: String, world_position: Vector2, opts: Dictionary = {}) -> bool:
+	if _muted:
+		return false
+	if _pool_2d.is_empty():
+		_ensure_pool_2d()
+	var stream: AudioStream = _get_stream(sound_name)
+	if stream == null:
+		push_warning("[SoundBank] Unknown sound: %s" % sound_name)
+		return false
+	var player: AudioStreamPlayer2D = _next_player_2d()
+	if player == null:
+		return false
+	if player.playing:
+		player.stop()
+	player.stream = stream
+	player.global_position = world_position
+	player.volume_db = float(opts.get("volume_db", _manifest_volume(sound_name)))
+	player.pitch_scale = float(opts.get("pitch", 1.0))
+	player.max_distance = float(opts.get("max_distance", 1200.0))
+	player.bus = BUS_NAME
 	if player.is_inside_tree():
 		player.play()
 	return true
@@ -125,11 +156,20 @@ func _manifest_volume(sound_name: String) -> float:
 
 func _ensure_pool() -> void:
 	for i in range(POOL_SIZE):
-		var p := AudioStreamPlayer.new()
+		var p: AudioStreamPlayer = AudioStreamPlayer.new()
 		p.bus = BUS_NAME
 		p.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(p)
 		_pool.append(p)
+
+
+func _ensure_pool_2d() -> void:
+	for i in range(POOL_SIZE_2D):
+		var p: AudioStreamPlayer2D = AudioStreamPlayer2D.new()
+		p.bus = BUS_NAME
+		p.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(p)
+		_pool_2d.append(p)
 
 
 func _next_player() -> AudioStreamPlayer:
@@ -142,6 +182,17 @@ func _next_player() -> AudioStreamPlayer:
 	# All busy — trample the oldest (voice-stealing is desirable for SFX).
 	_cursor = (idx + 1) % _pool.size()
 	return _pool[idx]
+
+
+func _next_player_2d() -> AudioStreamPlayer2D:
+	var idx := _cursor_2d
+	for i in range(_pool_2d.size()):
+		var j := (idx + i) % _pool_2d.size()
+		if not _pool_2d[j].playing:
+			_cursor_2d = (j + 1) % _pool_2d.size()
+			return _pool_2d[j]
+	_cursor_2d = (idx + 1) % _pool_2d.size()
+	return _pool_2d[idx]
 
 
 func _get_stream(sound_name: String) -> AudioStream:

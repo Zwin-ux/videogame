@@ -29,6 +29,7 @@ signal kicked(amplitude: float, duration: float)
 
 var _camera: Camera2D = null
 var _base_offset: Vector2 = Vector2.ZERO
+var _last_shake_delta: Vector2 = Vector2.ZERO
 var _active := false
 var _amp := 0.0
 var _dur := 0.0
@@ -49,28 +50,37 @@ func _process(delta: float) -> void:
 	if _camera == null or not is_instance_valid(_camera):
 		_active = false
 		return
+	# Track the camera's base offset live — other systems (parallax, tweens,
+	# cutscenes) may write camera.offset during a shake. Back out our own
+	# previous delta before measuring the new base so we don't fight them.
+	_base_offset = _camera.offset - _last_shake_delta
 	if _elapsed >= _dur:
 		_camera.offset = _base_offset
+		_last_shake_delta = Vector2.ZERO
 		_active = false
 		return
-	var t := 1.0 - (_elapsed / maxf(_dur, 0.001))
-	var amp := _amp * t
-	_camera.offset = _base_offset + Vector2(
+	var t: float = 1.0 - (_elapsed / maxf(_dur, 0.001))
+	var amp: float = _amp * t
+	var new_delta: Vector2 = Vector2(
 		_rng.randf_range(-amp, amp),
 		_rng.randf_range(-amp, amp))
+	_camera.offset = _base_offset + new_delta
+	_last_shake_delta = new_delta
 
 
 ## Register the active gameplay camera. Call from the camera's `_ready()`.
 func register_camera(camera: Camera2D) -> void:
 	_camera = camera
 	_base_offset = camera.offset if camera != null else Vector2.ZERO
+	_last_shake_delta = Vector2.ZERO
 
 
 func unregister_camera(camera: Camera2D) -> void:
 	if _camera == camera:
 		if _camera != null and is_instance_valid(_camera):
-			_camera.offset = _base_offset
+			_camera.offset = _camera.offset - _last_shake_delta
 		_camera = null
+		_last_shake_delta = Vector2.ZERO
 		_active = false
 
 

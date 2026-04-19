@@ -16,6 +16,7 @@ const TESTS := [
 	"res://tests/test_juice_integration.gd",
 	"res://tests/test_mission_descriptor.gd",
 	"res://tests/test_skywatcher.gd",
+	"res://tests/test_mission_manifest.gd",
 ]
 
 

@@ -1,0 +1,42 @@
+name: validate
+
+on:
+  push:
+    branches: [main, "update/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Godot full validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GODOT_VERSION: "4.6.1-stable"
+      GODOT_URL: "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Godot binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}
+
+      - name: Install Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -sSL "$GODOT_URL" -o /tmp/godot.zip
+          unzip -o /tmp/godot.zip -d ~/godot
+          # Normalise the binary name so validate.sh finds it.
+          mv ~/godot/Godot_v4.6.1-stable_linux.x86_64 ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Add Godot to PATH
+        run: echo "$HOME/godot" >> "$GITHUB_PATH"
+
+      - name: Run validation harness
+        run: bash tests/validate.sh

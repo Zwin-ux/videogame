@@ -616,6 +616,10 @@ func _spawn_player() -> void:
 	_player_camera.limit_bottom = int(WORLD_SIZE.y)
 	_player_camera.enabled = false
 	_player.visible = false
+	# 0.2 Hive Signal — register the live gameplay camera with the shake broker.
+	var camera_shake := get_node_or_null("/root/CameraShake")
+	if camera_shake != null:
+		camera_shake.call("register_camera", _player_camera)
 
 	_on_player_weapon_mode_changed(String(_player.call("get_weapon_mode")), false)
 
@@ -2241,6 +2245,7 @@ func _get_shaft_sector_name() -> String:
 
 func _push_combo(amount: int, text: String) -> void:
 	var previous_tier := _flow_reward_tier
+	var previous_combo := _combo
 	_combo = maxi(0, _combo + amount)
 	_combo_timer = COMBO_TIMEOUT
 	_flow_reward_tier = int(_combo / FLOW_REWARD_STEP)
@@ -2251,6 +2256,28 @@ func _push_combo(amount: int, text: String) -> void:
 	if text != "":
 		_set_message(text)
 	_update_hud()
+	_hive_signal_celebrate_combo(previous_combo, _combo)
+
+
+# 0.2 Hive Signal — kill streak celebration. Milestones at 3, 5, 8.
+const _HIVE_SIGNAL_MILESTONES: Array = [3, 5, 8]
+
+
+func _hive_signal_celebrate_combo(previous: int, current: int) -> void:
+	if current <= previous:
+		return
+	for milestone in _HIVE_SIGNAL_MILESTONES:
+		if previous < int(milestone) and current >= int(milestone):
+			var sb := get_node_or_null("/root/SoundBank")
+			if sb != null:
+				sb.call("play", "combo_milestone", {"pitch": 1.0 + 0.08 * float(_HIVE_SIGNAL_MILESTONES.find(milestone))})
+			var cs := get_node_or_null("/root/CameraShake")
+			if cs != null:
+				cs.call("kick", 2.0, 0.06)
+			var me := get_node_or_null("/root/MusicEngine")
+			if me != null:
+				me.call("bump_intensity", 0.06, 1.0)
+			break
 
 
 func _update_hud() -> void:

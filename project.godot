@@ -25,6 +25,10 @@ config/icon="res://art/export/menu_console_logo.png"
 PromptManager="*uid://bs7ha2um8fvd5"
 GameFlow="*res://scripts/game_flow.gd"
 ProfileStore="*res://scripts/profile_store.gd"
+SoundBank="*res://scripts/sound_bank.gd"
+MusicEngine="*res://scripts/music_engine.gd"
+CameraShake="*res://scripts/camera_shake.gd"
+HitStop="*res://scripts/hit_stop.gd"
 
 [display]
 

@@ -56,15 +56,51 @@ func _process(delta: float) -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body is PhysicsBody2D:
+		_play_sound("gun_hit")
+		_shake(1.5, 0.05)
 		queue_free()
 
 
 func _on_area_entered(area: Area2D) -> void:
 	if area.has_method("take_hit"):
-		area.call("take_hit", damage, global_position, _hit_kind)
+		var destroyed := bool(area.call("take_hit", damage, global_position, _hit_kind))
+		# 0.2 Hive Signal — gun feedback. No hit-stop on gun kills; that signature belongs to the blade.
+		if destroyed:
+			_play_sound("enemy_death")
+			_shake(3.0, 0.08)
+			_bump_music(0.08, 1.2)
+		else:
+			_play_sound("gun_hit")
+			_shake(1.5, 0.05)
+			_bump_music(0.03, 0.6)
 		_hits_left -= 1
 		if _hits_left <= 0:
 			queue_free()
+
+
+func _play_sound(name: String) -> void:
+	var sb := _service("SoundBank")
+	if sb != null:
+		sb.call("play", name)
+
+
+func _shake(amp: float, dur: float) -> void:
+	var cs := _service("CameraShake")
+	if cs != null:
+		cs.call("kick", amp, dur)
+
+
+func _bump_music(amount: float, decay: float) -> void:
+	var me := _service("MusicEngine")
+	if me != null:
+		me.call("bump_intensity", amount, decay)
+
+
+static func _service(name: String) -> Node:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return null
+	return tree.root.get_node_or_null(name) if tree.root != null else null
 
 
 func _draw() -> void:

@@ -23,6 +23,13 @@ func _on_body_entered(body: Node) -> void:
 	if body.has_method("apply_refill"):
 		body.call("apply_refill", fuel_value)
 		emit_signal("collected", fuel_value)
+		# 0.2 Hive Signal — pickup stinger. Major pickup = larger fuel value.
+		var tree := get_tree()
+		if tree != null and tree.root != null:
+			var sb := tree.root.get_node_or_null("SoundBank")
+			if sb != null:
+				var name := "pickup_major" if fuel_value >= 40.0 else "pickup"
+				sb.call("play", name)
 		queue_free()
 
 

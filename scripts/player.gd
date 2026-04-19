@@ -328,6 +328,14 @@ func take_damage(source_position: Vector2) -> void:
 	emit_signal("damaged", health, MAX_HEALTH)
 	emit_signal("health_changed", health, MAX_HEALTH)
 	queue_redraw()
+	# 0.2 Hive Signal — player hit is the strongest feedback short of a boss phase.
+	_play_feel_sound("player_hit")
+	_kick_camera(7.0, 0.14)
+	var tree := get_tree()
+	if tree != null and tree.root != null:
+		var me := tree.root.get_node_or_null("MusicEngine")
+		if me != null:
+			me.call("bump_intensity", 0.25, 1.8)
 
 	if health <= 0:
 		force_fail()
@@ -538,6 +546,9 @@ func _do_gun_attack(vertical_input: float) -> void:
 	_hurt_pose_timer = 0.0
 	_apply_impulse(shot_data.get("recoil", Vector2.ZERO))
 	emit_signal("shot_fired", _get_muzzle_position(_gun_attack_direction), shot_data)
+	# 0.2 Hive Signal — gun fire SFX + soft shake.
+	_play_feel_sound("gun_fire_%s" % _gun_attack_variant if _gun_attack_variant in ["pressure", "breaker"] else "gun_fire")
+	_kick_camera(2.0, 0.06)
 
 
 func _do_blade_attack(move_input: float, vertical_input: float) -> void:
@@ -551,6 +562,27 @@ func _do_blade_attack(move_input: float, vertical_input: float) -> void:
 	_hurt_pose_timer = 0.0
 	_apply_impulse(attack_data.get("impulse", Vector2.ZERO))
 	emit_signal("slash_fired", _get_slash_origin(_blade_attack_variant), attack_data)
+	# 0.2 Hive Signal — blade swing SFX. Blade hit + kill SFX live in slash_hitbox on contact.
+	_play_feel_sound("blade_swing")
+
+
+# 0.2 Hive Signal — thin helpers so feel calls don't litter the file.
+func _play_feel_sound(name: String) -> void:
+	var tree := get_tree()
+	if tree == null or tree.root == null:
+		return
+	var sb := tree.root.get_node_or_null("SoundBank")
+	if sb != null:
+		sb.call("play", name)
+
+
+func _kick_camera(amp: float, dur: float) -> void:
+	var tree := get_tree()
+	if tree == null or tree.root == null:
+		return
+	var cs := tree.root.get_node_or_null("CameraShake")
+	if cs != null:
+		cs.call("kick", amp, dur)
 
 
 func _build_gun_attack_profile(vertical_input: float) -> Dictionary:

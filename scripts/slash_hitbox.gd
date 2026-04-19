@@ -90,8 +90,40 @@ func _try_hit(area: Area2D) -> void:
 	_hit_targets[key] = true
 	var destroyed := bool(area.call("take_hit", damage, global_position, _hit_kind))
 	_spawn_hit_pop(area.global_position, destroyed)
+	# 0.2 Hive Signal — feel layer.
+	var sound_bank := _service("SoundBank")
+	var camera_shake := _service("CameraShake")
+	var hit_stop := _service("HitStop")
+	var music := _service("MusicEngine")
+	if destroyed:
+		if sound_bank != null:
+			sound_bank.call("play", "blade_hit_kill")
+			sound_bank.call("play", "enemy_death")
+		if camera_shake != null:
+			camera_shake.call("kick", 5.0, 0.10)
+		if hit_stop != null:
+			hit_stop.call("freeze_frames", 5)
+		if music != null:
+			music.call("bump_intensity", 0.12, 1.6)
+	else:
+		if sound_bank != null:
+			sound_bank.call("play", "blade_hit")
+		if camera_shake != null:
+			camera_shake.call("kick", 2.0, 0.06)
+		if music != null:
+			music.call("bump_intensity", 0.04, 0.8)
 	if source != null and is_instance_valid(source) and source.has_method("on_blade_hit"):
 		source.call("on_blade_hit", destroyed, area.global_position, {"variant": _attack_variant})
+
+
+static func _service(name: String) -> Node:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return null
+	var root := tree.root
+	if root == null:
+		return null
+	return root.get_node_or_null(name)
 
 
 func _apply_profile() -> void:

@@ -98,18 +98,52 @@ func take_hit(amount: int, hit_position: Vector2, hit_kind: String = "gun") -> b
 		return false
 
 	var damage := amount + (2 if hit_kind == "blade" else 0)
+	var previous_health := _health
 	_health = maxi(0, _health - damage)
 	_flash_timer = 0.18
 	_velocity.x += signf(global_position.x - hit_position.x) * (72.0 if hit_kind == "blade" else 34.0)
 	_velocity.y = minf(_velocity.y, -110.0 if hit_kind == "blade" else -52.0)
 	emit_signal("health_changed", _health, max_health)
 	queue_redraw()
+	_feel_on_boss_hit(previous_health, _health)
 
 	if _health <= 0:
 		_enter_defeated_state()
 		return true
 
 	return true
+
+
+# 0.2 Hive Signal — boss phase feel. Phase breakpoints at 66% and 33% of max health
+# trigger the louder treatment. Ordinary hits get a softer layer.
+func _feel_on_boss_hit(prev_hp: int, new_hp: int) -> void:
+	var tree := get_tree()
+	if tree == null or tree.root == null:
+		return
+	var sb := tree.root.get_node_or_null("SoundBank")
+	var cs := tree.root.get_node_or_null("CameraShake")
+	var hs := tree.root.get_node_or_null("HitStop")
+	var me := tree.root.get_node_or_null("MusicEngine")
+	if sb != null:
+		sb.call("play", "blade_hit")
+	if cs != null:
+		cs.call("kick", 3.5, 0.08)
+	# Per-hit intensity tracking was "health bar drives mood" — modern-pattern,
+	# not arcade. Intensity now steps at phase gates only; see below.
+
+	var phase_thresholds: Array = [int(max_health * 0.66), int(max_health * 0.33)]
+	for threshold in phase_thresholds:
+		var hp_line: int = int(threshold)
+		if prev_hp > hp_line and new_hp <= hp_line:
+			if sb != null:
+				sb.call("play", "rival_phase_change")
+			if cs != null:
+				cs.call("kick", 9.0, 0.25)
+			if hs != null:
+				hs.call("freeze_frames", 6)
+			if me != null:
+				me.call("bump_intensity", 0.3, 3.0)
+			break
 
 
 func _process(delta: float) -> void:

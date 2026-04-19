@@ -61,8 +61,11 @@ const BACKDROP_HIVE_SHAFT := 1
 const BACKDROP_SUNSET_RUIN := 2
 const BACKDROP_MOUNTAIN_PASS := 3
 const FRONT_MAIN := "main"
+const FRONT_CORKBOARD := "corkboard"
 const FRONT_CUSTOMIZE := "customize"
 const FRONT_SETTINGS := "settings"
+
+const MissionManifest := preload("res://scripts/mission_manifest.gd")
 const PHASE_SHAFT := "shaft"
 const PHASE_CAVE := "cave"
 const PHASE_BOSS := "boss"
@@ -379,6 +382,9 @@ var _player
 var _player_camera: Camera2D
 var _state := "boot"
 var _front_mode := FRONT_MAIN
+## 0.3 Sprint-1 Finisher — mission corkboard cursor + slip cache.
+var _corkboard_index: int = 0
+var _corkboard_slips: Array = []
 var _menu_index := 0
 var _skin_index := 0
 var _settings_index := 0
@@ -1057,6 +1063,8 @@ func _update_title_state() -> void:
 	match _front_mode:
 		FRONT_MAIN:
 			_update_main_menu_input()
+		FRONT_CORKBOARD:
+			_update_corkboard_input()
 		FRONT_CUSTOMIZE:
 			_update_customize_input()
 		FRONT_SETTINGS:
@@ -1077,8 +1085,11 @@ func _set_front_door_layout(show_console: bool, show_choice: bool, show_footer: 
 func _set_front_mode(mode: String) -> void:
 	_front_mode = mode
 	_set_front_door_layout(true, false, true)
-	title_overlay.visible = mode == FRONT_MAIN
-	menu_window.visible = mode == FRONT_MAIN
+	# The corkboard rides on the same menu_window as FRONT_MAIN so there are
+	# no new panels / containers — arcade-cabinet doctrine compliance.
+	var main_or_corkboard: bool = mode == FRONT_MAIN or mode == FRONT_CORKBOARD
+	title_overlay.visible = main_or_corkboard
+	menu_window.visible = main_or_corkboard
 	customize_window.visible = mode == FRONT_CUSTOMIZE
 	settings_window.visible = mode == FRONT_SETTINGS
 	starter_choice_wrap.visible = false
@@ -1086,7 +1097,7 @@ func _set_front_mode(mode: String) -> void:
 	if is_instance_valid(_player):
 		_player.call("set_weapon_mode", _preview_weapon_mode)
 		_player.call("set_controls_enabled", false)
-		_player.visible = mode == FRONT_MAIN
+		_player.visible = main_or_corkboard
 
 	match mode:
 		FRONT_MAIN:
@@ -1094,6 +1105,12 @@ func _set_front_mode(mode: String) -> void:
 			intro_caption_label.text = "Sanctuary still holds above the breach. Pick steel and start the first purge."
 			footer_hint_label.text = "UP / DOWN NAV   ATTACK CONFIRM"
 			_rebuild_menu_list()
+		FRONT_CORKBOARD:
+			start_prompt_label.text = "ATTACK LAUNCH CONTRACT"
+			intro_caption_label.text = "Manifest board. Pick a purge. Locked slips open after earlier clears."
+			footer_hint_label.text = "UP / DOWN NAV   ATTACK LAUNCH   CANCEL BACK"
+			_refresh_corkboard_slips()
+			_rebuild_corkboard_list()
 		FRONT_CUSTOMIZE:
 			start_prompt_label.text = ""
 			intro_caption_label.text = "Read shell color and weapon flare on the live dock."
@@ -1124,13 +1141,63 @@ func _update_main_menu_input() -> void:
 func _activate_menu_entry(entry_id: String) -> void:
 	match entry_id:
 		"start":
-			_start_landing_intro()
+			# 0.3 Sprint-1 Finisher — "start" now opens the mission corkboard
+			# instead of jumping straight to the landing intro. The corkboard
+			# then calls _start_landing_intro() after a mission is picked.
+			_set_front_mode(FRONT_CORKBOARD)
 		"customize":
 			_set_front_mode(FRONT_CUSTOMIZE)
 		"settings":
 			_set_front_mode(FRONT_SETTINGS)
 		"quit":
 			get_tree().quit()
+
+
+func _refresh_corkboard_slips() -> void:
+	_corkboard_slips = MissionManifest.list(profile_store)
+	if _corkboard_slips.is_empty():
+		_corkboard_index = 0
+		return
+	_corkboard_index = clampi(_corkboard_index, 0, _corkboard_slips.size() - 1)
+
+
+func _update_corkboard_input() -> void:
+	if _corkboard_slips.is_empty():
+		_refresh_corkboard_slips()
+	if _corkboard_slips.is_empty():
+		return
+	if _menu_move_up_pressed():
+		_corkboard_index = wrapi(_corkboard_index - 1, 0, _corkboard_slips.size())
+		_rebuild_corkboard_list()
+		_play_cursor_cue()
+	if _menu_move_down_pressed():
+		_corkboard_index = wrapi(_corkboard_index + 1, 0, _corkboard_slips.size())
+		_rebuild_corkboard_list()
+		_play_cursor_cue()
+	if _menu_cancel_pressed():
+		_set_front_mode(FRONT_MAIN)
+		return
+	if _menu_accept_pressed():
+		var slip: Dictionary = _corkboard_slips[_corkboard_index]
+		if not bool(slip.get("is_unlocked", false)):
+			footer_hint_label.text = "SLIP LOCKED. CLEAR EARLIER CONTRACT FIRST."
+			return
+		var key: String = String(slip.get("key", ""))
+		set_current_mission(key)
+		# 0.3 feel nudge — small confirm shake + music track swap right away.
+		var cs: Node = get_node_or_null("/root/CameraShake")
+		if cs != null:
+			cs.call("kick", 3.0, 0.08)
+		var me: Node = get_node_or_null("/root/MusicEngine")
+		if me != null:
+			me.call("set_track", String(MissionDescriptor.field(key, "music_track", "dock_breach")))
+		_start_landing_intro()
+
+
+func _play_cursor_cue() -> void:
+	var sb: Node = get_node_or_null("/root/SoundBank")
+	if sb != null:
+		sb.call("play", "pickup", {"pitch": 1.25, "volume_db": -12.0})
 
 
 func _update_customize_input() -> void:
@@ -1652,6 +1719,47 @@ func _rebuild_menu_list() -> void:
 			)
 		)
 	_refresh_front_door_readout()
+
+
+## 0.3 Sprint-1 Finisher — corkboard list reuses the menu_list container so
+## there are no new panels / boxes (arcade-cabinet doctrine). Each slip is
+## a _build_list_item row. Locked slips render with the locked flag so the
+## existing pixel_ui theme dims them.
+func _rebuild_corkboard_list() -> void:
+	_clear_container(menu_list)
+	if _corkboard_slips.is_empty():
+		return
+	for index in range(_corkboard_slips.size()):
+		var slip: Dictionary = _corkboard_slips[index]
+		var title: String = String(slip.get("display_name", "???"))
+		var stamp: String = String(slip.get("stamp", "locked")).to_upper()
+		var subtitle: String = _corkboard_subtitle_for(slip)
+		var icon: String = "[>]" if bool(slip.get("is_unlocked", false)) else "[X]"
+		menu_list.add_child(
+			_build_list_item(
+				title,
+				stamp,
+				subtitle,
+				index == _corkboard_index,
+				not bool(slip.get("is_unlocked", false)),
+				icon,
+			)
+		)
+	_refresh_front_door_readout()
+
+
+func _corkboard_subtitle_for(slip: Dictionary) -> String:
+	if not bool(slip.get("is_unlocked", false)):
+		return "Slip locked. Clear the prior contract to unseal."
+	var key: String = String(slip.get("key", ""))
+	if key == MissionDescriptor.KEY_ROOFTOP_RUSH:
+		var secs: float = MissionDescriptor.target_time_for(key)
+		return "Skyline Rush — cut the matriarch inside %d seconds." % int(secs)
+	if key == MissionDescriptor.KEY_SKYLINE_SHIFT:
+		return "Lift above the shaft. Rooftop hunters above the bridge."
+	if key == MissionDescriptor.KEY_DOCK_BREACH:
+		return "Hive Shaft approach. First purge — Brood Warden at the top."
+	return "Contract open. Launch when ready."
 
 
 func _rebuild_customize_list() -> void:

@@ -6,6 +6,7 @@ const BULLET_SCENE := preload("res://scenes/bullet.tscn")
 const SLASH_SCENE := preload("res://scenes/slash_hitbox.tscn")
 const SLASH_FX_SCENE := preload("res://scenes/slash_fx.tscn")
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
+const SKYWATCHER_SCENE := preload("res://scenes/skywatcher.tscn")
 const MINE_SCENE := preload("res://scenes/mine.tscn")
 const SHELLBACK_SCENE := preload("res://scenes/shellback_crawler.tscn")
 const BROOD_POD_SCENE := preload("res://scenes/brood_pod.tscn")
@@ -273,6 +274,29 @@ const MOUNTAIN_MINE_POSITIONS := [
 	Vector2(1488.0, 212.0),
 ]
 
+## 0.3 Skyline Shift — two Skywatcher drones for QA playtest.
+## Sprint-2 will redistribute + tune.
+const MOUNTAIN_SKYWATCHER_DATA := [
+	{
+		"pos": Vector2(1180.0, 360.0),
+		"patrol": 110.0,
+		"speed": 92.0,
+		"health": 3,
+		"dive_range": 220.0,
+		"dive_cooldown": 2.6,
+		"points": 180,
+	},
+	{
+		"pos": Vector2(1420.0, 300.0),
+		"patrol": 120.0,
+		"speed": 100.0,
+		"health": 3,
+		"dive_range": 240.0,
+		"dive_cooldown": 2.2,
+		"points": 200,
+	},
+]
+
 const HIVE_ANCHOR_DATA := [
 	{"anchor_id": "lower_brood", "anchor_name": "Lower Brood Organ", "pos": Vector2(786.0, 2284.0), "health": 6},
 	{"anchor_id": "mid_artery", "anchor_name": "Mid Artery Nest", "pos": Vector2(428.0, 1486.0), "health": 7},
@@ -520,16 +544,17 @@ func _ready() -> void:
 	_ensure_transfer_line()
 	_spawn_player()
 	_apply_selected_skin()
-	# 0.3 Skyline Shift — dev/QA can pick a mission via CLI:
-	#   godot --mission=skyline_shift
-	_apply_cli_mission_override()
+	# 0.3 Skyline Shift — dev / QA CLI flags:
+	#   godot --mission=skyline_shift     preselect a mission
+	#   godot --dev-unlock-all            unlock every mission slip
+	_apply_cli_dev_flags()
 	_enter_title()
 	var boot_mode := String(game_flow.call("consume_boot_mode", "contract")) if game_flow != null else "contract"
 	if boot_mode == "contract":
 		_start_landing_intro()
 
 
-func _apply_cli_mission_override() -> void:
+func _apply_cli_dev_flags() -> void:
 	var args: PackedStringArray = OS.get_cmdline_args()
 	for arg in args:
 		if arg.begins_with("--mission="):
@@ -539,7 +564,26 @@ func _apply_cli_mission_override() -> void:
 				print("[main] CLI mission override: %s" % key)
 			else:
 				push_warning("[main] CLI --mission=%s unknown; using default" % key)
-			return
+		elif arg == "--dev-unlock-all":
+			_apply_dev_unlock_all()
+
+
+func _apply_dev_unlock_all() -> void:
+	# Pre-seed the profile so every MissionManifest slip returns unlocked.
+	# Strictly QA / playtest — never call this from production paths.
+	if profile_store == null or not profile_store.has_method("set_record"):
+		push_warning("[main] --dev-unlock-all: no profile_store, ignoring")
+		return
+	profile_store.call("set_record_max", "hive_regions_cleansed", 1)
+	profile_store.call("set_record_max", "skyline_regions_cleansed", 1)
+	profile_store.call("set_record_max", "alpha_demo_clears", 1)
+	profile_store.call("save_profile")
+	print("[main] --dev-unlock-all: every mission slip unlocked for this run")
+
+
+## Compatibility shim for the pre-0.3.1 name. Prefer _apply_cli_dev_flags.
+func _apply_cli_mission_override() -> void:
+	_apply_cli_dev_flags()
 
 
 func _process(delta: float) -> void:
@@ -2175,13 +2219,23 @@ func _spawn_hazards() -> void:
 
 
 func _spawn_mountain_hazards() -> void:
-	_total_threats += MOUNTAIN_MITE_DATA.size() + MOUNTAIN_CRAWLER_DATA.size() + MOUNTAIN_POD_DATA.size() + MOUNTAIN_MINE_POSITIONS.size()
+	_total_threats += MOUNTAIN_MITE_DATA.size() + MOUNTAIN_CRAWLER_DATA.size() + MOUNTAIN_POD_DATA.size() + MOUNTAIN_MINE_POSITIONS.size() + MOUNTAIN_SKYWATCHER_DATA.size()
 
 	for mite_data in MOUNTAIN_MITE_DATA:
 		var mite := ENEMY_SCENE.instantiate()
 		enemies.add_child(mite)
 		mite.call("configure", mite_data)
 		mite.connect("destroyed", Callable(self, "_on_hazard_destroyed"))
+
+	# 0.3 Skyline Shift — Skywatchers. See skywatcher.gd for the 4-state
+	# dive machine + weak-zone cowl. bind_player lets them aim dives.
+	for sw_data in MOUNTAIN_SKYWATCHER_DATA:
+		var skywatcher := SKYWATCHER_SCENE.instantiate()
+		enemies.add_child(skywatcher)
+		skywatcher.call("configure", sw_data)
+		if is_instance_valid(_player):
+			skywatcher.call("bind_player", _player)
+		skywatcher.connect("destroyed", Callable(self, "_on_hazard_destroyed"))
 
 	for crawler_data in MOUNTAIN_CRAWLER_DATA:
 		var crawler := SHELLBACK_SCENE.instantiate()

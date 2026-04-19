@@ -28,6 +28,22 @@ func run() -> Dictionary:
 	killed_front = sky.take_hit(1, Vector2(0.0, -10.0), "gun")
 	a.true_(killed_front, "front gun hits 3 times = dead")
 
+	# --- destroyed signal carries the right payload ------------------
+	sky = SkywatcherScript.new()
+	sky.global_position = Vector2(0.0, 0.0)
+	sky.max_health = 1
+	sky._health = 1
+	sky.point_value = 180
+	var signal_log: Array = []
+	var recorder := SignalCapture.new(signal_log)
+	sky.connect("destroyed", Callable(recorder, "_on_destroyed"))
+	var _died: bool = sky.take_hit(5, Vector2(0.0, -10.0), "gun")
+	a.eq(int(signal_log.size()), 1, "destroyed emits exactly once")
+	if signal_log.size() >= 1:
+		var payload: Dictionary = signal_log[0]
+		a.eq(int(payload["points"]), 180, "destroyed carries point_value")
+		a.eq(String(payload["hit_kind"]), "gun", "destroyed carries hit_kind")
+
 	# --- weak-zone contract ------------------------------------------
 	sky = SkywatcherScript.new()
 	sky.global_position = Vector2(0.0, 0.0)
@@ -113,3 +129,13 @@ func run() -> Dictionary:
 
 	player.free()
 	return a.report()
+
+
+## Tiny RefCounted sink so the `destroyed` signal can be captured without a
+## connected Callable going out of scope between connect and emit.
+class SignalCapture:
+	var sink: Array
+	func _init(into: Array) -> void:
+		sink = into
+	func _on_destroyed(points: int, hit_kind: String) -> void:
+		sink.append({"points": points, "hit_kind": hit_kind})

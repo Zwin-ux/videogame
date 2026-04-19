@@ -72,10 +72,10 @@ func bind_player(player: Node2D) -> void:
 func take_hit(amount: int, hit_position: Vector2, hit_kind: String = "gun") -> bool:
 	var damage: int = amount
 	# Weak-zone read: a hit landing below the belly line cashes extra damage.
-	# Blade hits get a bigger bonus because cutting the cowl is the signature
-	# kill fantasy for this enemy.
+	# Blade cuts score 3x, everything else 2x. Parenthesized so the
+	# precedence is obvious.
 	if _is_weak_zone_hit(hit_position):
-		damage *= 2 if hit_kind != "blade" else 3
+		damage *= (3 if hit_kind == "blade" else 2)
 	_health -= damage
 	_hurt_pose_timer = 0.22
 	if _health <= 0:
@@ -130,6 +130,9 @@ func _update_hover(delta: float) -> void:
 	if _state_timer >= dive_cooldown and _can_dive_at_player():
 		_state_timer = 0.0
 		_state = State.DIVE_TELEGRAPH
+		# Arcade cue: short "charging" chirp on telegraph so the player
+		# doesn't rely on vision alone to read the dive.
+		_play_cue("gun_hit", 1.4)
 
 
 func _can_dive_at_player() -> bool:
@@ -178,6 +181,16 @@ func _apply_collision_radius() -> void:
 	collision_shape.shape = shape
 
 
+## Thin helper — shared so tests can stub SoundBank without patching draws.
+func _play_cue(sound_name: String, pitch: float = 1.0) -> void:
+	var tree: SceneTree = get_tree() if is_inside_tree() else null
+	if tree == null or tree.root == null:
+		return
+	var sb: Node = tree.root.get_node_or_null("SoundBank")
+	if sb != null:
+		sb.call("play", sound_name, {"pitch": pitch})
+
+
 func _on_body_entered(body: Node) -> void:
 	if _hurt_pose_timer > 0.0:
 		return
@@ -189,7 +202,11 @@ func _draw() -> void:
 	# Placeholder silhouette until art pass in sprint-2. Matches the
 	# readable rooftop-menace shape: body, drop-cowl exhaust, eye line.
 	var body_color := Color(0.211765, 0.262745, 0.372549, 1.0)
-	var cowl_color := Color(0.968627, 0.498039, 0.219608, 1.0) if _state == State.DIVE_TELEGRAPH else Color(0.117647, 0.141176, 0.184314, 1.0)
+	# Cowl always renders a dim warning-orange so the weak-zone TELL is
+	# proactive, not only readable during telegraph. Telegraph brightens it.
+	var cowl_color := Color(0.501961, 0.262745, 0.090196, 1.0)
+	if _state == State.DIVE_TELEGRAPH:
+		cowl_color = Color(0.968627, 0.498039, 0.219608, 1.0)
 	var eye_color := Color(0.286275, 0.831373, 0.898039, 1.0)
 	# Body
 	draw_circle(Vector2(0.0, -2.0), 14.0, body_color)
@@ -199,7 +216,7 @@ func _draw() -> void:
 	draw_line(Vector2(16.0, -6.0 + wing_offset), Vector2(6.0, -2.0), body_color, 3.0)
 	# Eye
 	draw_rect(Rect2(-4.0, -4.0, 8.0, 2.0), eye_color)
-	# Weak-zone cowl (bottom). Warmer / brighter during telegraph so it reads.
+	# Weak-zone cowl (bottom). Warning-orange at rest, bright during telegraph.
 	draw_rect(Rect2(-7.0, 8.0, 14.0, 4.0), cowl_color)
 	if _hurt_pose_timer > 0.0:
 		draw_circle(Vector2(0.0, 0.0), 18.0, Color(0.984314, 0.898039, 0.627451, 0.25))

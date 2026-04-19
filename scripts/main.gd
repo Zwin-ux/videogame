@@ -6,6 +6,7 @@ const BULLET_SCENE := preload("res://scenes/bullet.tscn")
 const SLASH_SCENE := preload("res://scenes/slash_hitbox.tscn")
 const SLASH_FX_SCENE := preload("res://scenes/slash_fx.tscn")
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
+const SKYWATCHER_SCENE := preload("res://scenes/skywatcher.tscn")
 const MINE_SCENE := preload("res://scenes/mine.tscn")
 const SHELLBACK_SCENE := preload("res://scenes/shellback_crawler.tscn")
 const BROOD_POD_SCENE := preload("res://scenes/brood_pod.tscn")
@@ -60,8 +61,11 @@ const BACKDROP_HIVE_SHAFT := 1
 const BACKDROP_SUNSET_RUIN := 2
 const BACKDROP_MOUNTAIN_PASS := 3
 const FRONT_MAIN := "main"
+const FRONT_CORKBOARD := "corkboard"
 const FRONT_CUSTOMIZE := "customize"
 const FRONT_SETTINGS := "settings"
+
+const MissionManifest := preload("res://scripts/mission_manifest.gd")
 const PHASE_SHAFT := "shaft"
 const PHASE_CAVE := "cave"
 const PHASE_BOSS := "boss"
@@ -273,6 +277,29 @@ const MOUNTAIN_MINE_POSITIONS := [
 	Vector2(1488.0, 212.0),
 ]
 
+## 0.3 Skyline Shift — two Skywatcher drones for QA playtest.
+## Sprint-2 will redistribute + tune.
+const MOUNTAIN_SKYWATCHER_DATA := [
+	{
+		"pos": Vector2(1180.0, 360.0),
+		"patrol": 110.0,
+		"speed": 92.0,
+		"health": 3,
+		"dive_range": 220.0,
+		"dive_cooldown": 2.6,
+		"points": 180,
+	},
+	{
+		"pos": Vector2(1420.0, 300.0),
+		"patrol": 120.0,
+		"speed": 100.0,
+		"health": 3,
+		"dive_range": 240.0,
+		"dive_cooldown": 2.2,
+		"points": 200,
+	},
+]
+
 const HIVE_ANCHOR_DATA := [
 	{"anchor_id": "lower_brood", "anchor_name": "Lower Brood Organ", "pos": Vector2(786.0, 2284.0), "health": 6},
 	{"anchor_id": "mid_artery", "anchor_name": "Mid Artery Nest", "pos": Vector2(428.0, 1486.0), "health": 7},
@@ -355,6 +382,9 @@ var _player
 var _player_camera: Camera2D
 var _state := "boot"
 var _front_mode := FRONT_MAIN
+## 0.3 Sprint-1 Finisher — mission corkboard cursor + slip cache.
+var _corkboard_index: int = 0
+var _corkboard_slips: Array = []
 var _menu_index := 0
 var _skin_index := 0
 var _settings_index := 0
@@ -520,10 +550,46 @@ func _ready() -> void:
 	_ensure_transfer_line()
 	_spawn_player()
 	_apply_selected_skin()
+	# 0.3 Skyline Shift — dev / QA CLI flags:
+	#   godot --mission=skyline_shift     preselect a mission
+	#   godot --dev-unlock-all            unlock every mission slip
+	_apply_cli_dev_flags()
 	_enter_title()
 	var boot_mode := String(game_flow.call("consume_boot_mode", "contract")) if game_flow != null else "contract"
 	if boot_mode == "contract":
 		_start_landing_intro()
+
+
+func _apply_cli_dev_flags() -> void:
+	var args: PackedStringArray = OS.get_cmdline_args()
+	for arg in args:
+		if arg.begins_with("--mission="):
+			var key: String = arg.substr("--mission=".length())
+			if MissionDescriptor.exists(key):
+				set_current_mission(key)
+				print("[main] CLI mission override: %s" % key)
+			else:
+				push_warning("[main] CLI --mission=%s unknown; using default" % key)
+		elif arg == "--dev-unlock-all":
+			_apply_dev_unlock_all()
+
+
+func _apply_dev_unlock_all() -> void:
+	# Pre-seed the profile so every MissionManifest slip returns unlocked.
+	# Strictly QA / playtest — never call this from production paths.
+	if profile_store == null or not profile_store.has_method("set_record"):
+		push_warning("[main] --dev-unlock-all: no profile_store, ignoring")
+		return
+	profile_store.call("set_record_max", "hive_regions_cleansed", 1)
+	profile_store.call("set_record_max", "skyline_regions_cleansed", 1)
+	profile_store.call("set_record_max", "alpha_demo_clears", 1)
+	profile_store.call("save_profile")
+	print("[main] --dev-unlock-all: every mission slip unlocked for this run")
+
+
+## Compatibility shim for the pre-0.3.1 name. Prefer _apply_cli_dev_flags.
+func _apply_cli_mission_override() -> void:
+	_apply_cli_dev_flags()
 
 
 func _process(delta: float) -> void:
@@ -997,6 +1063,8 @@ func _update_title_state() -> void:
 	match _front_mode:
 		FRONT_MAIN:
 			_update_main_menu_input()
+		FRONT_CORKBOARD:
+			_update_corkboard_input()
 		FRONT_CUSTOMIZE:
 			_update_customize_input()
 		FRONT_SETTINGS:
@@ -1017,8 +1085,11 @@ func _set_front_door_layout(show_console: bool, show_choice: bool, show_footer: 
 func _set_front_mode(mode: String) -> void:
 	_front_mode = mode
 	_set_front_door_layout(true, false, true)
-	title_overlay.visible = mode == FRONT_MAIN
-	menu_window.visible = mode == FRONT_MAIN
+	# The corkboard rides on the same menu_window as FRONT_MAIN so there are
+	# no new panels / containers — arcade-cabinet doctrine compliance.
+	var main_or_corkboard: bool = mode == FRONT_MAIN or mode == FRONT_CORKBOARD
+	title_overlay.visible = main_or_corkboard
+	menu_window.visible = main_or_corkboard
 	customize_window.visible = mode == FRONT_CUSTOMIZE
 	settings_window.visible = mode == FRONT_SETTINGS
 	starter_choice_wrap.visible = false
@@ -1026,7 +1097,7 @@ func _set_front_mode(mode: String) -> void:
 	if is_instance_valid(_player):
 		_player.call("set_weapon_mode", _preview_weapon_mode)
 		_player.call("set_controls_enabled", false)
-		_player.visible = mode == FRONT_MAIN
+		_player.visible = main_or_corkboard
 
 	match mode:
 		FRONT_MAIN:
@@ -1034,6 +1105,12 @@ func _set_front_mode(mode: String) -> void:
 			intro_caption_label.text = "Sanctuary still holds above the breach. Pick steel and start the first purge."
 			footer_hint_label.text = "UP / DOWN NAV   ATTACK CONFIRM"
 			_rebuild_menu_list()
+		FRONT_CORKBOARD:
+			start_prompt_label.text = "ATTACK LAUNCH CONTRACT"
+			intro_caption_label.text = "Manifest board. Pick a purge. Locked slips open after earlier clears."
+			footer_hint_label.text = "UP / DOWN NAV   ATTACK LAUNCH   CANCEL BACK"
+			_refresh_corkboard_slips()
+			_rebuild_corkboard_list()
 		FRONT_CUSTOMIZE:
 			start_prompt_label.text = ""
 			intro_caption_label.text = "Read shell color and weapon flare on the live dock."
@@ -1064,13 +1141,63 @@ func _update_main_menu_input() -> void:
 func _activate_menu_entry(entry_id: String) -> void:
 	match entry_id:
 		"start":
-			_start_landing_intro()
+			# 0.3 Sprint-1 Finisher — "start" now opens the mission corkboard
+			# instead of jumping straight to the landing intro. The corkboard
+			# then calls _start_landing_intro() after a mission is picked.
+			_set_front_mode(FRONT_CORKBOARD)
 		"customize":
 			_set_front_mode(FRONT_CUSTOMIZE)
 		"settings":
 			_set_front_mode(FRONT_SETTINGS)
 		"quit":
 			get_tree().quit()
+
+
+func _refresh_corkboard_slips() -> void:
+	_corkboard_slips = MissionManifest.list(profile_store)
+	if _corkboard_slips.is_empty():
+		_corkboard_index = 0
+		return
+	_corkboard_index = clampi(_corkboard_index, 0, _corkboard_slips.size() - 1)
+
+
+func _update_corkboard_input() -> void:
+	if _corkboard_slips.is_empty():
+		_refresh_corkboard_slips()
+	if _corkboard_slips.is_empty():
+		return
+	if _menu_move_up_pressed():
+		_corkboard_index = wrapi(_corkboard_index - 1, 0, _corkboard_slips.size())
+		_rebuild_corkboard_list()
+		_play_cursor_cue()
+	if _menu_move_down_pressed():
+		_corkboard_index = wrapi(_corkboard_index + 1, 0, _corkboard_slips.size())
+		_rebuild_corkboard_list()
+		_play_cursor_cue()
+	if _menu_cancel_pressed():
+		_set_front_mode(FRONT_MAIN)
+		return
+	if _menu_accept_pressed():
+		var slip: Dictionary = _corkboard_slips[_corkboard_index]
+		if not bool(slip.get("is_unlocked", false)):
+			footer_hint_label.text = "SLIP LOCKED. CLEAR EARLIER CONTRACT FIRST."
+			return
+		var key: String = String(slip.get("key", ""))
+		set_current_mission(key)
+		# 0.3 feel nudge — small confirm shake + music track swap right away.
+		var cs: Node = get_node_or_null("/root/CameraShake")
+		if cs != null:
+			cs.call("kick", 3.0, 0.08)
+		var me: Node = get_node_or_null("/root/MusicEngine")
+		if me != null:
+			me.call("set_track", String(MissionDescriptor.field(key, "music_track", "dock_breach")))
+		_start_landing_intro()
+
+
+func _play_cursor_cue() -> void:
+	var sb: Node = get_node_or_null("/root/SoundBank")
+	if sb != null:
+		sb.call("play", "pickup", {"pitch": 1.25, "volume_db": -12.0})
 
 
 func _update_customize_input() -> void:
@@ -1212,13 +1339,47 @@ func _commit_starter_choice(mode: String) -> void:
 	_begin_playable_slice()
 
 
+## Mission dispatch — 0.3 Skyline Shift sprint-1. Tracks which mission the
+## current run was started with so _reset_run() can route geometry, spawn
+## point, and backdrop per-descriptor instead of hardcoding Dock Breach.
+const MissionDescriptor = preload("res://scripts/mission_descriptor.gd")
+var _current_mission_key: String = MissionDescriptor.KEY_DOCK_BREACH
+## Live spawn of the active run — mission-aware. Altitude meters use this
+## so Skyline-start missions do not report bogus "above origin" numbers.
+var _run_spawn_point: Vector2 = Vector2.ZERO
+
+
+## Public entry — call this before _begin_playable_slice to pick a mission.
+## Unknown keys silently fall back to the default mission (dock_breach).
+func set_current_mission(mission_key: String) -> void:
+	if MissionDescriptor.exists(mission_key):
+		_current_mission_key = mission_key
+	else:
+		push_warning("[main] Unknown mission key '%s', defaulting to '%s'" % [mission_key, MissionDescriptor.default_key()])
+		_current_mission_key = MissionDescriptor.default_key()
+
+
+func get_current_mission() -> String:
+	return _current_mission_key
+
+
 func _begin_playable_slice() -> void:
 	_reset_run()
-	_set_message("Sanctuary drop confirmed. Burn the Hive Shaft anchors and expose the Brood Warden.")
+	# Descriptor opening is an OPTIONAL override. Null / empty falls back to
+	# the weapon-aware BountyFeed opener so we do not regress Dock Breach copy.
+	var opening_override: Variant = MissionDescriptor.field(_current_mission_key, "opening_message", null)
+	if opening_override != null and String(opening_override) != "":
+		_set_message(String(opening_override))
+	# Dock Breach keeps the existing BountyFeed opener set inside _reset_run.
 
 
 func _reset_run() -> void:
-	var spawn_point := _get_spawn_point()
+	var descriptor: Dictionary = MissionDescriptor.get_descriptor(_current_mission_key)
+	var flow: String = String(descriptor.get("flow", MissionDescriptor.FLOW_FULL))
+	var starting_region: String = String(descriptor.get("starting_region", REGION_HIVE))
+	var spawn_override: Variant = descriptor.get("spawn_override", null)
+	var spawn_point: Vector2 = spawn_override if spawn_override is Vector2 else _get_spawn_point()
+	_run_spawn_point = spawn_point
 	_state = "boot"
 	_run_time = 0.0
 	_transfer_timer = 0.0
@@ -1228,8 +1389,8 @@ func _reset_run() -> void:
 	_flow_reward_tier = 0
 	_threats_cleared = 0
 	_total_threats = 0
-	_route_phase = PHASE_SHAFT
-	_active_region_id = REGION_HIVE
+	_route_phase = PHASE_MOUNTAIN if flow == MissionDescriptor.FLOW_SKYLINE_ONLY else PHASE_SHAFT
+	_active_region_id = starting_region
 	_active_boss_region_id = ""
 	_initialize_region_states()
 	_kill_floor_active = true
@@ -1258,9 +1419,18 @@ func _reset_run() -> void:
 		return
 
 	_state = STATE_PLAYING
-	_build_tower()
-	_spawn_hazards()
-	_spawn_region_anchors(REGION_HIVE)
+	# 0.3 Skyline Shift — mission dispatch routes geometry by descriptor flow.
+	if flow == MissionDescriptor.FLOW_SKYLINE_ONLY:
+		_build_mountain_slice()
+		_spawn_mountain_hazards()
+		_spawn_region_anchors(REGION_SKYLINE)
+		# Skyline-only runs mean the skyline is unlocked-and-active from boot,
+		# not gated behind a Hive clearance.
+		_set_region_state(REGION_SKYLINE, REGION_STATE_ACTIVE)
+	else:
+		_build_tower()
+		_spawn_hazards()
+		_spawn_region_anchors(REGION_HIVE)
 
 	_player.set_physics_process(true)
 	_player.visible = true
@@ -1279,7 +1449,13 @@ func _reset_run() -> void:
 	_set_kill_floor_visible(true)
 	_ensure_transfer_line()
 	_transfer_line.visible = false
-	backdrop.call("set_region_mode", BACKDROP_HIVE_SHAFT)
+	var backdrop_mode: int = int(descriptor.get("backdrop_mode", BACKDROP_HIVE_SHAFT))
+	backdrop.call("set_region_mode", backdrop_mode)
+	# 0.2 Hive Signal — swap music track to match the mission's region.
+	var music_track: String = String(descriptor.get("music_track", "dock_breach"))
+	var music_engine: Node = get_node_or_null("/root/MusicEngine")
+	if music_engine != null:
+		music_engine.call("set_track", music_track)
 	_set_boss_ui_visible(false)
 	_set_duel_dialogue_visible(false)
 	_hide_receipt()
@@ -1543,6 +1719,47 @@ func _rebuild_menu_list() -> void:
 			)
 		)
 	_refresh_front_door_readout()
+
+
+## 0.3 Sprint-1 Finisher — corkboard list reuses the menu_list container so
+## there are no new panels / boxes (arcade-cabinet doctrine). Each slip is
+## a _build_list_item row. Locked slips render with the locked flag so the
+## existing pixel_ui theme dims them.
+func _rebuild_corkboard_list() -> void:
+	_clear_container(menu_list)
+	if _corkboard_slips.is_empty():
+		return
+	for index in range(_corkboard_slips.size()):
+		var slip: Dictionary = _corkboard_slips[index]
+		var title: String = String(slip.get("display_name", "???"))
+		var stamp: String = String(slip.get("stamp", "locked")).to_upper()
+		var subtitle: String = _corkboard_subtitle_for(slip)
+		var icon: String = "[>]" if bool(slip.get("is_unlocked", false)) else "[X]"
+		menu_list.add_child(
+			_build_list_item(
+				title,
+				stamp,
+				subtitle,
+				index == _corkboard_index,
+				not bool(slip.get("is_unlocked", false)),
+				icon,
+			)
+		)
+	_refresh_front_door_readout()
+
+
+func _corkboard_subtitle_for(slip: Dictionary) -> String:
+	if not bool(slip.get("is_unlocked", false)):
+		return "Slip locked. Clear the prior contract to unseal."
+	var key: String = String(slip.get("key", ""))
+	if key == MissionDescriptor.KEY_ROOFTOP_RUSH:
+		var secs: float = MissionDescriptor.target_time_for(key)
+		return "Skyline Rush — cut the matriarch inside %d seconds." % int(secs)
+	if key == MissionDescriptor.KEY_SKYLINE_SHIFT:
+		return "Lift above the shaft. Rooftop hunters above the bridge."
+	if key == MissionDescriptor.KEY_DOCK_BREACH:
+		return "Hive Shaft approach. First purge — Brood Warden at the top."
+	return "Contract open. Launch when ready."
 
 
 func _rebuild_customize_list() -> void:
@@ -2110,13 +2327,23 @@ func _spawn_hazards() -> void:
 
 
 func _spawn_mountain_hazards() -> void:
-	_total_threats += MOUNTAIN_MITE_DATA.size() + MOUNTAIN_CRAWLER_DATA.size() + MOUNTAIN_POD_DATA.size() + MOUNTAIN_MINE_POSITIONS.size()
+	_total_threats += MOUNTAIN_MITE_DATA.size() + MOUNTAIN_CRAWLER_DATA.size() + MOUNTAIN_POD_DATA.size() + MOUNTAIN_MINE_POSITIONS.size() + MOUNTAIN_SKYWATCHER_DATA.size()
 
 	for mite_data in MOUNTAIN_MITE_DATA:
 		var mite := ENEMY_SCENE.instantiate()
 		enemies.add_child(mite)
 		mite.call("configure", mite_data)
 		mite.connect("destroyed", Callable(self, "_on_hazard_destroyed"))
+
+	# 0.3 Skyline Shift — Skywatchers. See skywatcher.gd for the 4-state
+	# dive machine + weak-zone cowl. bind_player lets them aim dives.
+	for sw_data in MOUNTAIN_SKYWATCHER_DATA:
+		var skywatcher := SKYWATCHER_SCENE.instantiate()
+		enemies.add_child(skywatcher)
+		skywatcher.call("configure", sw_data)
+		if is_instance_valid(_player):
+			skywatcher.call("bind_player", _player)
+		skywatcher.connect("destroyed", Callable(self, "_on_hazard_destroyed"))
 
 	for crawler_data in MOUNTAIN_CRAWLER_DATA:
 		var crawler := SHELLBACK_SCENE.instantiate()
@@ -2224,7 +2451,10 @@ func _apply_run_camera(delta: float) -> void:
 
 
 func _get_altitude_meters() -> int:
-	return maxi(0, int(round((_get_spawn_point().y - _highest_player_y) / PIXELS_PER_METER)))
+	# 0.3 Skyline Shift — use the live run spawn, not the intro marker, so
+	# the best-altitude record tracks from the actual mission drop.
+	var origin_y: float = _run_spawn_point.y if _run_spawn_point != Vector2.ZERO else _get_spawn_point().y
+	return maxi(0, int(round((origin_y - _highest_player_y) / PIXELS_PER_METER)))
 
 
 func _get_shaft_sector_name() -> String:
@@ -2281,7 +2511,16 @@ func _hive_signal_celebrate_combo(previous: int, current: int) -> void:
 
 
 func _update_hud() -> void:
-	timer_label.text = "%03dm" % _get_current_altitude_meters()
+	# 0.3 Skyline Shift — Rush missions swap altitude readout for a
+	# countdown. No timer set = altitude meters as before.
+	var rush_target: float = MissionDescriptor.target_time_for(_current_mission_key)
+	if rush_target > 0.0:
+		var remaining: float = maxf(rush_target - _run_time, 0.0)
+		var mins: int = int(remaining / 60.0)
+		var secs: int = int(remaining) % 60
+		timer_label.text = "%01d:%02d" % [mins, secs]
+	else:
+		timer_label.text = "%03dm" % _get_current_altitude_meters()
 	if _state == STATE_TRANSFER:
 		objective_label.text = "TRANSFER // brood breach" if _transfer_kind == TRANSFER_KIND_CAVE else "TRANSFER // skyline route"
 		stats_label.text = "CHAIN x%02d   VERIFIED %d/%d" % [_combo, _threats_cleared, _total_threats]
@@ -2293,7 +2532,10 @@ func _update_hud() -> void:
 			stats_label.text = "CHAIN x%02d   CORE ACTIVE" % _combo
 	elif _route_phase == PHASE_REWARD:
 		var upgrade_level := int(_player.call("get_weapon_upgrade_level", _starter_weapon)) if is_instance_valid(_player) else 0
-		objective_label.text = "HIVE SHAFT // cleansed"
+		# 0.3 Skyline Shift — region name comes from the mission descriptor so
+		# Skyline / Foundry / future clears do not all read "HIVE SHAFT".
+		var cleansed_region: String = String(MissionDescriptor.field(_current_mission_key, "display_name", "HIVE SHAFT")).to_upper()
+		objective_label.text = "%s // cleansed" % cleansed_region
 		stats_label.text = "CHAIN x%02d   %s +%d" % [_combo, _get_weapon_display_name_for(_starter_weapon), max(1, upgrade_level)]
 	elif _route_phase == PHASE_CAVE:
 		objective_label.text = "BROOD CHAMBER // apex ahead"
@@ -2735,7 +2977,11 @@ func _on_player_died() -> void:
 func _get_current_altitude_meters() -> int:
 	if not is_instance_valid(_player):
 		return 0
-	return maxi(0, int(round((_get_spawn_point().y - _player.global_position.y) / PIXELS_PER_METER)))
+	# Altitude is measured relative to wherever the current mission actually
+	# dropped the player, not the static intro marker — Skyline-Shift would
+	# otherwise report a huge positive offset on boot.
+	var origin_y: float = _run_spawn_point.y if _run_spawn_point != Vector2.ZERO else _get_spawn_point().y
+	return maxi(0, int(round((origin_y - _player.global_position.y) / PIXELS_PER_METER)))
 
 
 func _get_cave_distance_meters() -> int:

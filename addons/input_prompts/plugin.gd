@@ -3,7 +3,7 @@
 @tool
 extends EditorPlugin
 
-var inspector_plugin = preload("res://addons/input_prompts/inspector_plugin.gd").new()
+var inspector_plugin: EditorInspectorPlugin = preload("res://addons/input_prompts/inspector_plugin.gd").new()
 
 
 func _enter_tree():
@@ -36,7 +36,7 @@ func _enter_tree():
 			}
 		)
 
-		var icon_settings = [
+		var icon_settings: Array = [
 			"addons/input_prompts/icons/keyboard",
 			"addons/input_prompts/icons/mouse_buttons",
 			"addons/input_prompts/icons/joypad_buttons/nintendo",

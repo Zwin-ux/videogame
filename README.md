@@ -23,6 +23,24 @@ Quick start:
 2. Run `scenes/main_menu.tscn` for the front door.
 3. Run `scenes/main.tscn` if you want the gameplay slice directly.
 
+## Replit / GitHub Import
+
+This repo is prepared for Replit import from GitHub. Replit is best used here for code edits, Git sync, AI-assisted scripting, and headless health checks. Use desktop Godot for scene editing, tilemaps, animation setup, import settings, and final export review.
+
+Replit Run button:
+
+```bash
+bash tools/replit_health_check.sh
+```
+
+Optional web export helper, after adding a Godot export preset named `Web`:
+
+```bash
+bash tools/replit_export_web.sh
+```
+
+Full setup notes: [docs/setup/REPLIT.md](docs/setup/REPLIT.md)
+
 ## Repo Layout
 
 - `scenes/` playable scenes and UI surfaces

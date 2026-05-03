@@ -1,0 +1,13 @@
+entrypoint = "project.godot"
+run = "bash tools/replit_health_check.sh"
+audio = true
+
+[nix]
+channel = "stable-24_05"
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix", "project.godot"]
+
+[deployment]
+run = ["bash", "tools/replit_health_check.sh"]
+ignorePorts = true
